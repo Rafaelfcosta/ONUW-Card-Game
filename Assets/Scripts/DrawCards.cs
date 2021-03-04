@@ -13,9 +13,18 @@ public class DrawCards : MonoBehaviour
     public GameObject playerCardArea;
     public GameObject[] otherPlayersCardArea;
 
+    public GameObject Restartbtn;
+
     List<GameObject> cards = new List<GameObject>();
-    // Start is called before the first frame update
-    void Start()
+    
+
+    private void Awake()
+    {
+        setupCards();
+        giveCards();
+    }
+
+    private void setupCards()
     {
         cards.Add(robberCard);
         cards.Add(seerCard);
@@ -24,27 +33,23 @@ public class DrawCards : MonoBehaviour
         cards.Add(villagerCard);
         cards.Add(werewolfCard);
         cards.Add(werewolfCard);
-        print(cards.Count);
     }
 
-    public void onClick()
+    public void giveCards()
     {
-        //cards[Random.Range(0, cards.Count)];
-
-        //GameObject playerCard = Instantiate(werewolfCard, new Vector3(0,0,0), Quaternion.identity);
         int pos = Random.Range(0, cards.Count);
         GameObject playerCard = Instantiate(cards[pos], new Vector3(0, 0, 0), Quaternion.identity);
         cards.RemoveAt(pos);
-
-        if (playerCardArea.transform.childCount > 0)
-        {
-            Destroy(playerCardArea.transform.GetChild(0).gameObject);
-        }
         /*
-        foreach (Transform child in playerCardArea.transform)
-        {
-            Destroy(child.gameObject);
-        }*/
+               if (playerCardArea.transform.childCount > 0)
+               {
+                   Destroy(playerCardArea.transform.GetChild(0).gameObject);
+               }
+
+               foreach (Transform child in playerCardArea.transform)
+               {
+                   Destroy(child.gameObject);
+               }*/
 
         playerCard.transform.SetParent(playerCardArea.transform, false);
 
@@ -64,12 +69,6 @@ public class DrawCards : MonoBehaviour
 
         cards.RemoveRange(0, cards.Count);
 
-        print(cards.Count);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        //Restartbtn.SetActive(true);
     }
 }
