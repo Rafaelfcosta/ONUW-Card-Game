@@ -7,7 +7,7 @@ public class changeScene : MonoBehaviour
     public GameObject button;
     public void startGame()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
     }
 
     public void restartGame()

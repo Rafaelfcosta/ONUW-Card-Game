@@ -20,9 +20,16 @@ public class ToggleCardBack : MonoBehaviour
 
     public void OnMouseDown()
     {
+        print("aaaaaaa");
+        
         if (cardBack.activeSelf)
         {
             cardBack.SetActive(false);
         }
+    }
+
+    public void OnMouseEnter()
+    {
+        print("eeeeeeeeeeee");
     }
 }
