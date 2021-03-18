@@ -13,8 +13,6 @@ public class DrawCards : MonoBehaviour
     public GameObject playerCardArea;
     public GameObject[] otherPlayersCardArea;
 
-    public GameObject Restartbtn;
-
     List<GameObject> cards = new List<GameObject>();
     
 
@@ -40,17 +38,7 @@ public class DrawCards : MonoBehaviour
         int pos = Random.Range(0, cards.Count);
         GameObject playerCard = Instantiate(cards[pos], new Vector3(0, 0, 0), Quaternion.identity);
         cards.RemoveAt(pos);
-        /*
-               if (playerCardArea.transform.childCount > 0)
-               {
-                   Destroy(playerCardArea.transform.GetChild(0).gameObject);
-               }
-
-               foreach (Transform child in playerCardArea.transform)
-               {
-                   Destroy(child.gameObject);
-               }*/
-
+        
         playerCard.transform.SetParent(playerCardArea.transform, false);
 
         foreach (GameObject enemyArea in otherPlayersCardArea)
@@ -68,7 +56,5 @@ public class DrawCards : MonoBehaviour
         }
 
         cards.RemoveRange(0, cards.Count);
-
-        //Restartbtn.SetActive(true);
     }
 }

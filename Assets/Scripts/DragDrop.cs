@@ -19,7 +19,7 @@ public class DragDrop : MonoBehaviour
 
     private void Awake()
     {
-        Canvas = GameObject.Find("Main Canvas");
+        Canvas = GameObject.Find("Board");
     }
 
 

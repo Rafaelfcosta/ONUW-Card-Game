@@ -117,6 +117,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BackCard
       objectReference: {fileID: 0}
+    - target: {fileID: 6036557867767944906, guid: 4fa6112350e1c064ea8653705f4affbc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4fa6112350e1c064ea8653705f4affbc, type: 3}
 --- !u!1001 &891999427176979387
@@ -230,12 +235,12 @@ PrefabInstance:
     - target: {fileID: 7772560824272754903, guid: 71be6dfa9b507004586894b843c91499,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -368
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7772560824272754903, guid: 71be6dfa9b507004586894b843c91499,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -285
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7772560824272754903, guid: 71be6dfa9b507004586894b843c91499,
         type: 3}

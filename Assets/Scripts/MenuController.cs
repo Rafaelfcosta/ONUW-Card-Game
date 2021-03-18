@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-public class changeScene : MonoBehaviour
+public class MenuController : MonoBehaviour
 {
-    public GameObject button;
     public void startGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
@@ -13,5 +12,10 @@ public class changeScene : MonoBehaviour
     public void restartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void closeGame()
+    {
+        ApplicationController.closeGame();
     }
 }
