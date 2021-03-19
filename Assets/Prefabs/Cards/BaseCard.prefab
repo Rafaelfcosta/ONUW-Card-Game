@@ -63,6 +63,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -84,7 +85,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7772560824272754900}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e786291c729cdc243bb2f15a301c104d, type: 3}
   m_Name: 
@@ -108,6 +109,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 1800147729322168394}
+          m_TargetAssemblyTypeName: 
           m_MethodName: startDrag
           m_Mode: 1
           m_Arguments:
@@ -123,6 +125,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 1800147729322168394}
+          m_TargetAssemblyTypeName: 
           m_MethodName: endDrag
           m_Mode: 1
           m_Arguments:

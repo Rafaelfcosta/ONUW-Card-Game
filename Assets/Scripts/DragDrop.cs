@@ -6,8 +6,8 @@ public class DragDrop : MonoBehaviour
 {
     public GameObject Canvas;
     private bool isDragging = false;
-    private bool isOverDropZone = false;
-    private GameObject dropZone;
+    //private bool isOverDropZone = false;
+    //private GameObject dropZone;
     private Vector2 startPosition;
     private GameObject startParent;
 

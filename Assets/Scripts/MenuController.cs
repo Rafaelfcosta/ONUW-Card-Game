@@ -11,6 +11,7 @@ public class MenuController : MonoBehaviour
 
     public void restartGame()
     {
+        TimerController.timeLeft = 30f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

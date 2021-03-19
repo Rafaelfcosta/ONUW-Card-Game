@@ -17,18 +17,21 @@ public class GameController : MonoBehaviour
             cardBackController = bc.GetComponent<CardBackController>();
 
             
-            switch (playerController.cardName)
+            switch (playerController.CardName)
             {
-                case "Seer":  
+                case "Seer":
+                    playerController.MaxInteractions = 2;
                     cardBackController.canPlayerInteract = true;
                     break;
                 case "Robber":
+                    playerController.MaxInteractions = 1;
                     if (areaName != "MiddleArea")
                     {
                         cardBackController.canPlayerInteract = true;
                     }
                     break;
                 case "Werewolf":
+                    playerController.MaxInteractions = 1;
                     if (areaName == "MiddleArea")
                     {
                         cardBackController.canPlayerInteract = true;
@@ -38,7 +41,6 @@ public class GameController : MonoBehaviour
                     cardBackController.canPlayerInteract = false;
                     break;
             }
-            
         }
     }
 
@@ -60,9 +62,10 @@ public class GameController : MonoBehaviour
             {
                 GameObject cardback = hit.collider.gameObject;
                 cardBackController = cardback.GetComponent<CardBackController>();
-                if (cardBackController.canPlayerInteract)
+                if (cardBackController.canPlayerInteract && playerController.MaxInteractions > 0)
                 {
                     hideCard(cardback);
+                    playerController.MaxInteractions--;
                 }             
             }           
         }
