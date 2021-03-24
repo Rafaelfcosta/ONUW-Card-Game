@@ -6,9 +6,25 @@ public class PlayerController : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    private GameObject playerCard;
-    private string cardName;
+    public GameObject initialCard;
+    public GameObject currentPlayerCard;
+    private string currentCardName;
     private int maxInteractions = 0;
+    public bool turnActive = true;
+    public List<GameObject> interactedCards = new List<GameObject>();
+
+    void Start()
+    {
+        initialCard = GameObject.Find("PlayerCardArea").transform.GetChild(0).gameObject;
+        currentPlayerCard = initialCard;
+        currentCardName = getCardName(currentPlayerCard);
+        print(currentCardName);
+    }
+
+    public string getCardName(GameObject card)
+    {
+        return card.name.Substring(0, card.name.IndexOf("Card"));
+    }
 
     public int MaxInteractions
     {
@@ -16,24 +32,35 @@ public class PlayerController : MonoBehaviour
         set { maxInteractions = value; }
     }
 
-    public string CardName 
+    public string CardName
     {
-        get { return cardName; }
-        set { cardName = value; }
+        get { return currentCardName; }
+        set { currentCardName = value; }
     }
 
-    void Start()
+    public GameObject PlayerCard
     {
-        playerCard = GameObject.Find("PlayerCardArea").transform.GetChild(0).gameObject;
-        cardName = playerCard.name.Substring(0, playerCard.name.IndexOf("Card"));
-        print(cardName);
+        get { return currentPlayerCard; }
+        set
+        {
+            currentPlayerCard = value;
+            currentCardName = getCardName(value);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public GameObject InicialCard
     {
-        
+        get { return initialCard; }
+        set { initialCard = value; }
     }
-    
-    
+
+    public List<GameObject> getInteractedCards()
+    {
+        return interactedCards;
+    }
+
+    public void addInteractedCard(GameObject card)
+    {
+        interactedCards.Add(card);
+    }
 }

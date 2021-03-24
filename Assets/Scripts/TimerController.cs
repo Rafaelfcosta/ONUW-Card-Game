@@ -7,7 +7,9 @@ public class TimerController : MonoBehaviour
 {
 
     Text text;
-    public static float timeLeft = 30f;
+    public const float DEFAULT_TIME = 30f;
+    public static float timeLeft = DEFAULT_TIME;
+    public static bool active = true;
 
     // Start is called before the first frame update
     void Start()
@@ -18,12 +20,15 @@ public class TimerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeLeft -= Time.deltaTime;
-        if (timeLeft < 0)
+        if (active)
         {
-            timeLeft = 0;
+            timeLeft -= Time.deltaTime;
+            if (timeLeft < 0)
+            {
+                timeLeft = 0;
+                active = false;
+            }
+            text.text = Mathf.Round(timeLeft).ToString();
         }
-        text.text = Mathf.Round(timeLeft).ToString();
-
     }
 }

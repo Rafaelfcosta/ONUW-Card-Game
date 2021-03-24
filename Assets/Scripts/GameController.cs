@@ -6,16 +6,17 @@ public class GameController : MonoBehaviour
 {
     public PlayerController playerController;
     private CardBackController cardBackController;
-    public GameObject[] backCards;
+    public List<GameObject> backCards = new List<GameObject>();
+    private float step;
 
     void Start()
     {
-        backCards = GameObject.FindGameObjectsWithTag("backcard");
-        foreach(GameObject bc in backCards)
+        backCards.AddRange(GameObject.FindGameObjectsWithTag("backcard"));
+        backCards.Add(playerController.PlayerCard.transform.GetChild(0).gameObject);
+        foreach (GameObject bc in backCards)
         {
             string areaName = bc.transform.parent.parent.name;
             cardBackController = bc.GetComponent<CardBackController>();
-
             
             switch (playerController.CardName)
             {
@@ -48,6 +49,8 @@ public class GameController : MonoBehaviour
     void Update()
     {
         checkClicked();
+        checkTimer();
+
     }
 
     private void checkClicked()
@@ -65,7 +68,18 @@ public class GameController : MonoBehaviour
                 if (cardBackController.canPlayerInteract && playerController.MaxInteractions > 0)
                 {
                     hideCard(cardback);
+                    GameObject interactedCard = cardback.transform.parent.gameObject;
+                    playerController.addInteractedCard(interactedCard);
                     playerController.MaxInteractions--;
+
+
+                    if (playerController.getCardName(playerController.initialCard) == "Robber")
+                    {
+                        playerController.currentPlayerCard = interactedCard;
+                        playerController.CardName = playerController.getCardName(interactedCard);
+
+                        swapCards(playerController.initialCard, interactedCard);
+                    }
                 }             
             }           
         }
@@ -74,5 +88,36 @@ public class GameController : MonoBehaviour
     private void hideCard(GameObject cardback)
     {
         cardback.SetActive(false);
+    }
+
+    public void endTurn()
+    {
+        playerController.turnActive = false;
+        toggleAllBackCards(true);
+        TimerController.active = false;
+    }
+
+    private void checkTimer()
+    {
+        if (!TimerController.active && playerController.turnActive)
+        {
+            endTurn();
+        }
+    }
+
+    private void toggleAllBackCards(bool flag)
+    {
+        foreach (GameObject bc in backCards)
+        {
+            bc.SetActive(flag);
+        }
+    }
+
+    private void swapCards(GameObject firstCard, GameObject secondCard)
+    {
+        Transform tempParent = secondCard.transform.parent;
+
+        secondCard.transform.SetParent(firstCard.transform.parent, false);
+        firstCard.transform.SetParent(tempParent, false);
     }
 }
