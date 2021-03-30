@@ -7,7 +7,7 @@ public class TimerController : MonoBehaviour
 {
 
     Text text;
-    public const float DEFAULT_TIME = 30f;
+    public const float DEFAULT_TIME = 300f;
     public static float timeLeft = DEFAULT_TIME;
     public static bool active = true;
 

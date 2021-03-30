@@ -14,11 +14,10 @@ public class CardBackController : MonoBehaviour
     private void Start()
     {
         string areaName = transform.parent.parent.name;
-        //canPlayerInteract = true;
 
-        if (areaName == "PlayerCardArea")
+        if (areaName.Contains("InitialCardStand"))
         {
-            cardBack.SetActive(false);
+            Destroy(cardBack);
         }
     }
 }
