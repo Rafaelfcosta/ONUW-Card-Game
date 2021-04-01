@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
 {
     public PlayerController playerController;
     public GameObject initialCardStand;
+    public GameObject discussionArea;
     private CardBackController cardBackController;
     public List<GameObject> backCards = new List<GameObject>();
     private bool lonelyWolf = false;
@@ -22,7 +23,6 @@ public class GameController : MonoBehaviour
     {
         initialSetup();
         showPlayerInitialCard();
-        wakeOrder();
     }
 
     // Update is called once per frame
@@ -30,17 +30,21 @@ public class GameController : MonoBehaviour
     {
         checkClicked();
         checkTimer();
+
+        wakeOrder();
     }
+
+    //IEnumerable
 
     private void wakeOrder()
     {
         
-        //while(playerController.getCardName(playerController.InicialCard) != CURRENT_ROLE.ToString())
-        while (CURRENT_ROLE < CharsSequence.Villager)
+        if(CURRENT_ROLE <= CharsSequence.Villager)
         {
-            if (playerController.getCardName(playerController.InicialCard) == CURRENT_ROLE.ToString())
+            if (playerController.getCardName(playerController.InicialCard) == CURRENT_ROLE.ToString() && playerController.getCardName(playerController.InicialCard) != CharsSequence.Villager.ToString())
             {
-                break;
+                print("Player night action");
+                return;
             }
             else
             {
@@ -52,19 +56,12 @@ public class GameController : MonoBehaviour
 
     private void NextPlayer()
     {
-        if (CURRENT_ROLE < CharsSequence.Villager)
-        {
-            CURRENT_ROLE++;
-        }
+        CURRENT_ROLE++;
+    }
 
-        if (CURRENT_ROLE == CharsSequence.Villager)
-        {
-            print(CURRENT_STAGE + "ENDED");
-            CURRENT_STAGE++;
-            print("STARTING " + CURRENT_STAGE);
-        }
-
-        
+    private void startStage(GameStage stage)
+    {
+        Instantiate(discussionArea, GameObject.Find("Board").transform);       
     }
 
     private void doNightActionFor(String role)
@@ -72,7 +69,8 @@ public class GameController : MonoBehaviour
         print("Doint night action for ->" + role);
         switch (role)
         {
-            case "Seer":                
+            case "Seer":  
+                
                 break;
             case "Robber":
                 break;
@@ -85,6 +83,12 @@ public class GameController : MonoBehaviour
                 {
                     
                 }
+                break;
+            case "Villager":
+                print(CURRENT_STAGE + "ENDED");
+                CURRENT_STAGE++;
+                print("STARTING " + CURRENT_STAGE);
+                startStage(GameStage.DAY);
                 break;
             default:
                 break;
@@ -202,7 +206,6 @@ public class GameController : MonoBehaviour
         toggleAllBackCards(true);
         TimerController.active = false;
         CURRENT_ROLE++;
-        wakeOrder();
     }
 
     private void checkTimer()
