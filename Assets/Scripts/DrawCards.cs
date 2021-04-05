@@ -4,19 +4,13 @@ using UnityEngine;
 
 public class DrawCards : MonoBehaviour
 {
-    public GameObject robberCard;
-    public GameObject seerCard;
-    public GameObject villagerCard;
-    public GameObject werewolfCard;
-
     public GameObject middleArea;
     public GameObject playerCardArea;
     public GameObject[] otherPlayersCardArea;
-
+    public CardController cardController;
     List<GameObject> cards = new List<GameObject>();
-    
 
-    private void Awake()
+    void Start()
     {
         setupCards();
         giveCards();
@@ -24,34 +18,35 @@ public class DrawCards : MonoBehaviour
 
     private void setupCards()
     {
-        cards.Add(robberCard);
-        cards.Add(seerCard);
-        cards.Add(villagerCard);
-        cards.Add(villagerCard);
-        cards.Add(villagerCard);
-        cards.Add(werewolfCard);
-        cards.Add(werewolfCard);
+        cardController = GetComponent<CardController>();
+        cards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));
+        cards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));
+        cards.Add(cardController.createCard(GameController.CharsSequence.Seer));
+        cards.Add(cardController.createCard(GameController.CharsSequence.Robber));
+        cards.Add(cardController.createCard(GameController.CharsSequence.Villager));
+        cards.Add(cardController.createCard(GameController.CharsSequence.Villager));
+        cards.Add(cardController.createCard(GameController.CharsSequence.Villager));
     }
 
     public void giveCards()
     {
         int pos = Random.Range(0, cards.Count);
-        GameObject playerCard = Instantiate(cards[pos], new Vector3(0, 0, 0), Quaternion.identity);
+        GameObject playerCard = cards[pos];
         cards.RemoveAt(pos);
-        
+
         playerCard.transform.SetParent(playerCardArea.transform, false);
 
         foreach (GameObject enemyArea in otherPlayersCardArea)
         {
             int i = Random.Range(0, cards.Count);
-            GameObject enemyCard = Instantiate(cards[i], new Vector3(0, 0, 0), Quaternion.identity);
+            GameObject enemyCard = cards[i];
             enemyCard.transform.SetParent(enemyArea.transform, false);
             cards.RemoveAt(i);
         }
 
-        foreach(GameObject card in cards)
+        foreach (GameObject card in cards)
         {
-            GameObject middleCard = Instantiate(card, new Vector3(0, 0, 0), Quaternion.identity);
+            GameObject middleCard = card;
             middleCard.transform.SetParent(middleArea.transform, false);
         }
 

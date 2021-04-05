@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    private float revealCardTime = 12f;
+    private float moveToTime = .3f;
+    public Text startedAsText;
+    public Text hintText;
+    public Text stageText;
     public PlayerController playerController;
-    public GameObject initialCardStand;
     public GameObject discussionArea;
-    private CardBackController cardBackController;
-    public List<GameObject> backCards = new List<GameObject>();
+    public List<GameObject> cards = new List<GameObject>();
     private bool lonelyWolf = false;
     public CharsSequence CURRENT_ROLE = CharsSequence.Werewolf;
     public GameStage CURRENT_STAGE = GameStage.NIGHT;
@@ -22,7 +24,6 @@ public class GameController : MonoBehaviour
     void Start()
     {
         initialSetup();
-        showPlayerInitialCard();
     }
 
     // Update is called once per frame
@@ -30,16 +31,13 @@ public class GameController : MonoBehaviour
     {
         checkClicked();
         checkTimer();
-
         wakeOrder();
     }
 
-    //IEnumerable
-
     private void wakeOrder()
     {
-        
-        if(CURRENT_ROLE <= CharsSequence.Villager)
+
+        if (CURRENT_ROLE <= CharsSequence.Villager)
         {
             if (playerController.getCardName(playerController.InicialCard) == CURRENT_ROLE.ToString() && playerController.getCardName(playerController.InicialCard) != CharsSequence.Villager.ToString())
             {
@@ -61,7 +59,20 @@ public class GameController : MonoBehaviour
 
     private void startStage(GameStage stage)
     {
-        Instantiate(discussionArea, GameObject.Find("Board").transform);       
+        if (stage == GameStage.DAY)
+        {
+            stageText.text = "Etapa atual: " + "Dia";
+            hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
+            Instantiate(discussionArea, GameObject.Find("UI").transform, false);
+
+        }
+        else
+        {
+            if (stage == GameStage.VOTING)
+            {
+                stageText.text = "Etapa atual: " + "Votação";
+            }
+        }
     }
 
     private void doNightActionFor(String role)
@@ -69,20 +80,14 @@ public class GameController : MonoBehaviour
         print("Doint night action for ->" + role);
         switch (role)
         {
-            case "Seer":  
+            case "Seer":
                 
                 break;
             case "Robber":
+                
                 break;
             case "Werewolf":
-                if (lonelyWolf)
-                {
-                    
-                }
-                else
-                {
-                    
-                }
+            
                 break;
             case "Villager":
                 print(CURRENT_STAGE + "ENDED");
@@ -95,17 +100,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void showPlayerInitialCard()
-    {
-        Instantiate(initialCardStand, GameObject.Find("Board").transform);
-        GameObject initialStand = GameObject.Find("InitialCardStand(Clone)");
-        GameObject iniCard = Instantiate(playerController.InicialCard, initialStand.transform) as GameObject;
-        RectTransform rt = iniCard.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(377, 543);
-
-        Destroy(initialStand, 1f);
-    }
-
     private void initialSetup()
     {
         //Check if trigger lonely wolf setup
@@ -113,97 +107,102 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < ma.transform.childCount; i++)
         {
             GameObject middleCard = ma.transform.GetChild(i).gameObject;
-            if (playerController.getCardName(middleCard) == "Werewolf")
+            string cardname = playerController.getCardName(middleCard);
+            if (cardname == "Werewolf")
             {
                 lonelyWolf = true;
             }
         }
 
-
         //Configure player interactable cards
-        backCards.AddRange(GameObject.FindGameObjectsWithTag("backcard"));
-        backCards.Add(playerController.PlayerCard.transform.GetChild(0).gameObject);
-        foreach (GameObject bc in backCards)
+        cards.AddRange(GameObject.FindGameObjectsWithTag("Card"));
+        foreach (GameObject card in cards)
         {
-            string areaName = bc.transform.parent.parent.name;
-            cardBackController = bc.GetComponent<CardBackController>();
-
+            string areaName = card.transform.parent.name;
+            CardInteractionController cardInteractionController = card.GetComponent<CardInteractionController>();
 
             switch (playerController.CardName)
             {
+
                 case "Seer":
+                    setPlayerCardText("Vidente", "Você pode olhar duas cartas ao centro ou a carta de um jogador.");
                     playerController.MaxInteractions = 2;
                     if (areaName != "PlayerCardArea")
                     {
-                        cardBackController.canPlayerInteract = true;
+                        cardInteractionController.CanPlayerInteract = true;
                     }
                     break;
                 case "Robber":
+                    setPlayerCardText("Ladrão", "Você pode escolher a carta de outro jogador e trocar pela sua.");
                     playerController.MaxInteractions = 1;
-                    if (areaName != "MiddleArea")
+                    if (areaName != "MiddleArea" && areaName != "PlayerCardArea")
                     {
-                        cardBackController.canPlayerInteract = true;
+                        cardInteractionController.CanPlayerInteract = true;
                     }
                     break;
                 case "Werewolf":
                     if (lonelyWolf)
                     {
+                        setPlayerCardText("Lobisomem", "Você é o único lobisomem, por isso pode olhar uma carta ao centro.");
                         playerController.MaxInteractions = 1;
                     }
                     else
                     {
-                        if (areaName != "PlayerCardArea" && playerController.getCardName(bc.transform.parent.gameObject) == "Werewolf")
+                        setPlayerCardText("Lobisomem", "Neste momento os lobisomens devem conhecer um ao outro.");
+                        if (playerController.getCardName(card.gameObject) == "Werewolf")
                         {
-                            hideCard(bc);
+                            card.transform.GetChild(0).gameObject.SetActive(true);
+                            card.transform.GetChild(1).gameObject.SetActive(false);
                         }
                     }
 
                     if (areaName == "MiddleArea")
                     {
-                        cardBackController.canPlayerInteract = true;
+                        cardInteractionController.CanPlayerInteract = true;
                     }
                     break;
                 default:
-                    cardBackController.canPlayerInteract = false;
+                    setPlayerCardText("Aldeão", "Como um aldeão, você não possui ações na etapa da noite");
+                    cardInteractionController.CanPlayerInteract = false;
                     break;
             }
         }
     }
 
+    private void setPlayerCardText(string cardName, string hint)
+    {
+        startedAsText.text = "Você começou como um(a) " + cardName;
+        hintText.text = hint;
+    }
+
     private void checkClicked()
     {
-        if (Input.GetMouseButtonDown(0))
+        if ((Input.GetMouseButtonDown(0) || Input.touchCount > 0))
         {
+
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-
             RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+
             if (hit.collider != null)
             {
-                GameObject cardback = hit.collider.gameObject;
-                cardBackController = cardback.GetComponent<CardBackController>();
-                if (cardBackController.canPlayerInteract && playerController.MaxInteractions > 0)
+                GameObject selectedCard = hit.collider.gameObject;
+                if (selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract && playerController.MaxInteractions > 0)
                 {
-                    hideCard(cardback);
-                    GameObject interactedCard = cardback.transform.parent.gameObject;
-                    playerController.addInteractedCard(interactedCard);
+                    selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract = false;
+                    StartCoroutine(revealCard(selectedCard.transform, true));
+                    playerController.addInteractedCard(selectedCard);
                     playerController.MaxInteractions--;
 
-                    checkNightActions(interactedCard);
-                }             
-            }           
+                    checkNightActions(selectedCard);
+                }
+            }
         }
     }
-
-    private void hideCard(GameObject cardback)
-    {
-        cardback.SetActive(false);
-    }
-
     public void endTurn()
     {
         playerController.turnActive = false;
-        toggleAllBackCards(true);
+        toggleAllCardsVisible(false);
         TimerController.active = false;
         CURRENT_ROLE++;
     }
@@ -216,12 +215,24 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void toggleAllBackCards(bool flag)
+    private void toggleAllCardsVisible(bool flag)
     {
-        foreach (GameObject bc in backCards)
+
+        if (flag)
         {
-            if(bc != null)
-            bc.SetActive(flag);
+            foreach (GameObject card in cards)
+            {
+                card.transform.GetChild(0).gameObject.SetActive(true);
+                card.transform.GetChild(1).gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            foreach (GameObject card in cards)
+            {
+                card.transform.GetChild(0).gameObject.SetActive(false);
+                card.transform.GetChild(1).gameObject.SetActive(true);
+            }
         }
     }
 
@@ -233,22 +244,20 @@ public class GameController : MonoBehaviour
 
     private void seerNightAction(GameObject interactedCard)
     {
-        if(playerController.getCardName(playerController.initialCard) == "Seer")
+
+
+        if (playerController.getCardName(playerController.initialCard) == "Seer")
         {
-            if(playerController.MaxInteractions > 0)
+            if (playerController.MaxInteractions > 0)
             {
                 if (interactedCard.transform.parent.name == "MiddleArea")
                 {
-                    foreach (GameObject bc in backCards)
+                    foreach (GameObject card in cards)
                     {
-                        if (bc != null)
+                        string areaName = card.transform.parent.name;
+                        if (areaName != "MiddleArea")
                         {
-                            string areaName = bc.transform.parent.parent.name;
-                            if (areaName != "MiddleArea")
-                            {
-                                CardBackController cbc = bc.GetComponent<CardBackController>();
-                                cbc.canPlayerInteract = false;
-                            }
+                            card.GetComponent<CardInteractionController>().CanPlayerInteract = false;
                         }
                     }
                 }
@@ -264,9 +273,13 @@ public class GameController : MonoBehaviour
     {
         if (playerController.getCardName(playerController.initialCard) == "Robber")
         {
+            playerController.initialCard.transform.GetChild(1).GetComponent<SpriteRenderer>().sortingOrder++;
+            interactedCard.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder++;
             playerController.currentPlayerCard = interactedCard;
             playerController.CardName = playerController.getCardName(interactedCard);
 
+            StartCoroutine(MoveOverSeconds(playerController.initialCard, interactedCard));
+            StartCoroutine(MoveOverSeconds(interactedCard, playerController.initialCard));
             swapCards(playerController.initialCard, interactedCard);
         }
     }
@@ -278,4 +291,63 @@ public class GameController : MonoBehaviour
         secondCard.transform.SetParent(firstCard.transform.parent, false);
         firstCard.transform.SetParent(tempParent, false);
     }
+
+    IEnumerator revealCard(Transform card, bool show)
+    {
+        float minAngle = show ? 0 : 180;
+        float maxAngle = show ? 180 : 0;
+
+        float t = 0;
+        bool uncovered = false;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * revealCardTime;
+
+            float angle = Mathf.LerpAngle(minAngle, maxAngle, t);
+            card.eulerAngles = new Vector3(0, angle, 0);
+
+            if (((angle >= 90 && angle < 180) || (angle >= 270 && angle < 360)) && !uncovered)
+            {
+                uncovered = true;
+                for (int i = 0; i < card.childCount; i++)
+                {
+                    Transform c = card.GetChild(i);
+                    bool isActive = c.gameObject.activeSelf;
+                    if (isActive)
+                    {
+                        c.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        c.gameObject.SetActive(true);
+                    }
+
+                    c.GetComponent<SpriteRenderer>().flipX = true;
+
+                    yield return null;
+                }
+            }
+
+            yield return null;
+        }
+
+        yield return 0;
+    }
+
+    public IEnumerator MoveOverSeconds(GameObject objectToMove, GameObject objectDestination)
+    {
+        float elapsedTime = 0;
+        Vector3 startingPos = objectToMove.transform.position;
+        Vector3 end = objectDestination.transform.position;
+        while (elapsedTime < moveToTime)
+        {
+            objectToMove.transform.position = Vector3.Lerp(startingPos, end, (elapsedTime / moveToTime));
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        objectToMove.transform.position = end;
+    }
+
+
 }
