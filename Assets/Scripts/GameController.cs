@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +13,7 @@ public class GameController : MonoBehaviour
     public PlayerController playerController;
     public GameObject discussionArea;
     public List<GameObject> cards = new List<GameObject>();
+    public List<GameObject> playersCards = new List<GameObject>();
     private bool lonelyWolf = false;
     public CharsSequence CURRENT_ROLE = CharsSequence.Werewolf;
     public GameStage CURRENT_STAGE = GameStage.NIGHT;
@@ -41,7 +41,7 @@ public class GameController : MonoBehaviour
         {
             if (playerController.getCardName(playerController.InicialCard) == CURRENT_ROLE.ToString() && playerController.getCardName(playerController.InicialCard) != CharsSequence.Villager.ToString())
             {
-                print("Player night action");
+                //print("Player night action");
                 return;
             }
             else
@@ -75,28 +75,58 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void doNightActionFor(String role)
+    private void doNightActionFor(string role)
     {
-        print("Doint night action for ->" + role);
+        // if (botsCards.Contains(role) || role == "Villager")
+        // {
+        //print("Doin night action for ->" + role);
         switch (role)
         {
             case "Seer":
-                
+                int x = Random.Range(0, 2);
+                //print(x);
+                if (x < 2)
+                {
+                    //print("Olhando no meio");
+                    int middleOption = Random.Range(0, 2);
+                    if (middleOption == 0)
+                    {
+                        //print("1 e 2");
+                    }
+                    else
+                    {
+                        if (middleOption == 1)
+                        {
+                            //print("1 e 3");
+                        }
+                        else
+                        {
+                            //print("2 e 3");
+                        }
+                    }
+                }
+                else
+                {
+                    int p = Random.Range(0, 2) + 2;
+                    //print("Olhando carta do jogador " + p);
+                }
                 break;
             case "Robber":
-                
+                int op = Random.Range(0, 2) + 2;
+                //print("Roubando carta do jogador " + op);
                 break;
             case "Werewolf":
-            
+
                 break;
             case "Villager":
-                print(CURRENT_STAGE + "ENDED");
+                //print(CURRENT_STAGE + "ENDED");
                 CURRENT_STAGE++;
-                print("STARTING " + CURRENT_STAGE);
+                //print("STARTING " + CURRENT_STAGE);
                 startStage(GameStage.DAY);
                 break;
             default:
                 break;
+                // }
         }
     }
 
@@ -120,6 +150,17 @@ public class GameController : MonoBehaviour
         {
             string areaName = card.transform.parent.name;
             CardInteractionController cardInteractionController = card.GetComponent<CardInteractionController>();
+
+            if (areaName != "MiddleArea")
+            {
+                playersCards.Add(card);
+            }
+
+            if (areaName == "PlayerCardArea")
+            {
+                if (playerController.getCardName(playerController.currentPlayerCard) != "Villager")
+                    toggleCard(card, true);
+            }
 
             switch (playerController.CardName)
             {
@@ -187,6 +228,7 @@ public class GameController : MonoBehaviour
             if (hit.collider != null)
             {
                 GameObject selectedCard = hit.collider.gameObject;
+                playerController.currentPlayerCard = selectedCard;
                 if (selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract && playerController.MaxInteractions > 0)
                 {
                     selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract = false;
@@ -233,6 +275,20 @@ public class GameController : MonoBehaviour
                 card.transform.GetChild(0).gameObject.SetActive(false);
                 card.transform.GetChild(1).gameObject.SetActive(true);
             }
+        }
+    }
+
+    private void toggleCard(GameObject card, bool flag)
+    {
+        if (flag)
+        {
+            card.transform.GetChild(0).gameObject.SetActive(true);
+            card.transform.GetChild(1).gameObject.SetActive(false);
+        }
+        else
+        {
+            card.transform.GetChild(0).gameObject.SetActive(false);
+            card.transform.GetChild(1).gameObject.SetActive(true);
         }
     }
 

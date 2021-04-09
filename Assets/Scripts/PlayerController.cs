@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
         initialCard = GameObject.Find("PlayerCardArea").transform.GetChild(0).gameObject;
         currentPlayerCard = initialCard;
         currentCardName = getCardName(currentPlayerCard);
-        print(currentCardName);
+        // print(currentCardName);
     }
 
     public string getCardName(GameObject card)

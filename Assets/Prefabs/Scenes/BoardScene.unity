@@ -293,7 +293,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &290554349
 GameObject:
@@ -1360,6 +1360,7 @@ MonoBehaviour:
   discussionArea: {fileID: 3551404361018962652, guid: 39a9cb4461db6db4d98c98d4f38a0e7a,
     type: 3}
   cards: []
+  botsCards: []
   CURRENT_ROLE: 0
   CURRENT_STAGE: 0
 --- !u!4 &1069885614
@@ -1374,7 +1375,7 @@ Transform:
   m_LocalScale: {x: 7.5499, y: 1.45, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1070598844
 GameObject:
@@ -1783,7 +1784,7 @@ RectTransform:
   - {fileID: 1208586970}
   - {fileID: 2081567368}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: -0.007, y: 0.003, z: -0.08800001}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
