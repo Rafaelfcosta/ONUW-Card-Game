@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -64,7 +64,6 @@ public class GameController : MonoBehaviour
             stageText.text = "Etapa atual: " + "Dia";
             hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
             Instantiate(discussionArea, GameObject.Find("UI").transform, false);
-
         }
         else
         {
@@ -168,7 +167,7 @@ public class GameController : MonoBehaviour
                 case "Seer":
                     setPlayerCardText("Vidente", "Você pode olhar duas cartas ao centro ou a carta de um jogador.");
                     playerController.MaxInteractions = 2;
-                    if (areaName != "PlayerCardArea")
+                    if (areaName != PlayersAreasConstants.player)
                     {
                         cardInteractionController.CanPlayerInteract = true;
                     }
@@ -176,7 +175,7 @@ public class GameController : MonoBehaviour
                 case "Robber":
                     setPlayerCardText("Ladrão", "Você pode escolher a carta de outro jogador e trocar pela sua.");
                     playerController.MaxInteractions = 1;
-                    if (areaName != "MiddleArea" && areaName != "PlayerCardArea")
+                    if (areaName != PlayersAreasConstants.middle && areaName != PlayersAreasConstants.player)
                     {
                         cardInteractionController.CanPlayerInteract = true;
                     }
@@ -190,14 +189,14 @@ public class GameController : MonoBehaviour
                     else
                     {
                         setPlayerCardText("Lobisomem", "Neste momento os lobisomens devem conhecer um ao outro.");
-                        if (playerController.getCardName(card.gameObject) == "Werewolf")
+                        if (playerController.getCardName(card.gameObject).Equals(CharactersNamesConstants.werewolf) && !card.transform.parent.name.Equals(PlayersAreasConstants.middle))
                         {
                             card.transform.GetChild(0).gameObject.SetActive(true);
                             card.transform.GetChild(1).gameObject.SetActive(false);
                         }
                     }
 
-                    if (areaName == "MiddleArea")
+                    if (areaName == PlayersAreasConstants.middle)
                     {
                         cardInteractionController.CanPlayerInteract = true;
                     }
@@ -302,16 +301,16 @@ public class GameController : MonoBehaviour
     {
 
 
-        if (playerController.getCardName(playerController.initialCard) == "Seer")
+        if (playerController.getCardName(playerController.initialCard).Equals(CharactersNamesConstants.seer))
         {
             if (playerController.MaxInteractions > 0)
             {
-                if (interactedCard.transform.parent.name == "MiddleArea")
+                if (interactedCard.transform.parent.name == PlayersAreasConstants.middle)
                 {
                     foreach (GameObject card in cards)
                     {
                         string areaName = card.transform.parent.name;
-                        if (areaName != "MiddleArea")
+                        if (areaName != PlayersAreasConstants.middle)
                         {
                             card.GetComponent<CardInteractionController>().CanPlayerInteract = false;
                         }
@@ -327,7 +326,7 @@ public class GameController : MonoBehaviour
 
     private void robberNightAction(GameObject interactedCard)
     {
-        if (playerController.getCardName(playerController.initialCard) == "Robber")
+        if (playerController.getCardName(playerController.initialCard).Equals(CharactersNamesConstants.robber))
         {
             playerController.initialCard.transform.GetChild(1).GetComponent<SpriteRenderer>().sortingOrder++;
             interactedCard.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder++;
