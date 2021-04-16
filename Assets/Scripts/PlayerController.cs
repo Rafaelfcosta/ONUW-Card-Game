@@ -2,56 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
-{
-    // Start is called before the first frame update
-
-    public GameObject initialCard;
-    public GameObject currentPlayerCard;
-    private string currentCardName;
+public class PlayerController : PlayerBase
+{  
     private int maxInteractions = 0;
     public bool turnActive = true;
     public List<GameObject> interactedCards = new List<GameObject>();
 
-    void Start()
+    public int getMaxInteractions()
     {
-        initialCard = GameObject.Find("PlayerCardArea").transform.GetChild(0).gameObject;
-        currentPlayerCard = initialCard;
-        currentCardName = getCardName(currentPlayerCard);
-        // print(currentCardName);
+        return this.maxInteractions;
     }
 
-    public string getCardName(GameObject card)
+    public void setMaxInteractions(int maxInteractions)
     {
-        return card.name.Substring(0, card.name.IndexOf("Card"));
+        this.maxInteractions = maxInteractions;
     }
 
-    public int MaxInteractions
+    public bool isTurnActive()
     {
-        get { return maxInteractions; }
-        set { maxInteractions = value; }
+        return this.turnActive;
     }
 
-    public string CardName
+    public void setTurnActive(bool turnActive)
     {
-        get { return currentCardName; }
-        set { currentCardName = value; }
-    }
-
-    public GameObject PlayerCard
-    {
-        get { return currentPlayerCard; }
-        set
-        {
-            currentPlayerCard = value;
-            currentCardName = getCardName(value);
-        }
-    }
-
-    public GameObject InicialCard
-    {
-        get { return initialCard; }
-        set { initialCard = value; }
+        this.turnActive = turnActive;
     }
 
     public List<GameObject> getInteractedCards()
@@ -62,5 +36,5 @@ public class PlayerController : MonoBehaviour
     public void addInteractedCard(GameObject card)
     {
         interactedCards.Add(card);
-    }
+    }   
 }
