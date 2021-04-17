@@ -12,7 +12,7 @@ public class MenuController : MonoBehaviour
 
     public void restartGame()
     {
-        ClearLog();
+        // ClearLog();
         TimerController.timeLeft = TimerController.DEFAULT_TIME;
         TimerController.active = true;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -23,11 +23,11 @@ public class MenuController : MonoBehaviour
         ApplicationController.closeGame();
     }
 
-    public void ClearLog()
-    {
-        var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
-        var type = assembly.GetType("UnityEditor.LogEntries");
-        var method = type.GetMethod("Clear");
-        method.Invoke(new object(), null);
-    }
+    // public void ClearLog()
+    // {
+    //     var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
+    //     var type = assembly.GetType("UnityEditor.LogEntries");
+    //     var method = type.GetMethod("Clear");
+    //     method.Invoke(new object(), null);
+    // }
 }

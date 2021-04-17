@@ -315,8 +315,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialCard: {fileID: 0}
   currentCard: {fileID: 0}
-  turnActive: 1
-  interactedCards: []
 --- !u!1 &290554349
 GameObject:
   m_ObjectHideFlags: 0
@@ -1375,6 +1373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b91ee88264aa1e64ba15896d73c8263e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debug: 0
   startedAsText: {fileID: 2142592240}
   hintText: {fileID: 669282718}
   stageText: {fileID: 1081813335}
