@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : PlayerBase
-{  
+{
     private int maxInteractions = 0;
-    public bool turnActive = true;
-    public List<GameObject> interactedCards = new List<GameObject>();
-
+    private bool hasRemainingInteractions = false;
+    private bool turnActive = true;
+    
     public int getMaxInteractions()
     {
         return this.maxInteractions;
@@ -16,6 +16,15 @@ public class PlayerController : PlayerBase
     public void setMaxInteractions(int maxInteractions)
     {
         this.maxInteractions = maxInteractions;
+
+        if (this.maxInteractions > 0)
+        {
+            this.hasRemainingInteractions = true;
+        }
+        else
+        {
+            this.hasRemainingInteractions = false;
+        }
     }
 
     public bool isTurnActive()
@@ -28,13 +37,8 @@ public class PlayerController : PlayerBase
         this.turnActive = turnActive;
     }
 
-    public List<GameObject> getInteractedCards()
+    public bool isHasRemainingInteractions()
     {
-        return interactedCards;
+        return this.hasRemainingInteractions;
     }
-
-    public void addInteractedCard(GameObject card)
-    {
-        interactedCards.Add(card);
-    }   
 }
