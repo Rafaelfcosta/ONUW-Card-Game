@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    public bool debug = false;
     private float revealCardTime = 12f;
     private float moveToTime = .3f;
     public Text startedAsText;
@@ -53,7 +54,7 @@ public class GameController : MonoBehaviour
 
             if (playerCard.Equals(CURRENT_ROLE.ToString()) && !playerCard.Equals(CharsSequence.Villager.ToString()))
             {
-                // print("Player night action");
+                // log("Player night action");
                 return;
             }
             else
@@ -78,6 +79,29 @@ public class GameController : MonoBehaviour
             stageText.text = "Etapa atual: " + "Dia";
             hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
             Instantiate(discussionArea, GameObject.Find("UI").transform, false);
+
+
+            Debug.Log("-----------SUMMARY----------");
+            Debug.Log("player initial card ->" + playerController.getInitialCard().name);
+            Debug.Log("player current card ->" + playerController.getCurrentCard().name);
+            foreach (var card in playerController.getCardsAndPlace())
+            {
+                Debug.Log("player " + " -> " + card.Key + ", " + card.Value.name);
+            }
+            foreach (var area in playersCardsArea)
+            {
+                BotController botController = area.GetComponent<BotController>();
+                if (botController != null)
+                {
+                    Debug.Log(area.name + " initial card ->" + botController.getInitialCard().name);
+                    Debug.Log(area.name + " current card ->" + botController.getCurrentCard().name);
+                    foreach (var card in botController.getCardsAndPlace())
+                    {
+                        Debug.Log(area.name + " -> " + card.Key + ", " + card.Value.name);
+                    }
+                }
+            }
+
         }
         else
         {
@@ -92,7 +116,7 @@ public class GameController : MonoBehaviour
     {
         if (botsCards.Contains(role) || role == CharactersNamesConstants.villager)
         {
-            Debug.Log("Doin night action for ->" + role);
+            log("Doin night action for ->" + role);
             botController = null;
             foreach (GameObject playerArea in playersCardsArea)
             {
@@ -128,11 +152,11 @@ public class GameController : MonoBehaviour
                         int middleOrPlayer = Random.Range(0, 3);
                         if (!middleOrPlayer.Equals(2))
                         {
-                            Debug.Log("Olhando no meio");
+                            log("Olhando no meio");
                             int seerMiddleOption = Random.Range(0, 3);
                             if (seerMiddleOption.Equals(0))
                             {
-                                Debug.Log("1 e 2");
+                                log("1 e 2");
                                 botController.addCardAndPlace(middleArea.name + 0, middleArea.transform.GetChild(0).gameObject);
                                 botController.addCardAndPlace(middleArea.name + 1, middleArea.transform.GetChild(1).gameObject);
                             }
@@ -140,13 +164,13 @@ public class GameController : MonoBehaviour
                             {
                                 if (seerMiddleOption.Equals(1))
                                 {
-                                    Debug.Log("1 e 3");
+                                    log("1 e 3");
                                     botController.addCardAndPlace(middleArea.name + 0, middleArea.transform.GetChild(0).gameObject);
                                     botController.addCardAndPlace(middleArea.name + 2, middleArea.transform.GetChild(2).gameObject);
                                 }
                                 else
                                 {
-                                    Debug.Log("2 e 3");
+                                    log("2 e 3");
                                     botController.addCardAndPlace(middleArea.name + 1, middleArea.transform.GetChild(1).gameObject);
                                     botController.addCardAndPlace(middleArea.name + 2, middleArea.transform.GetChild(2).gameObject);
                                 }
@@ -158,12 +182,12 @@ public class GameController : MonoBehaviour
                             GameObject lookedCard = otherPlayersArea[playerToLook].transform.GetChild(0).gameObject;
 
                             botController.addCardAndPlace(lookedCard.transform.parent.name, lookedCard);
-                            Debug.Log("Olhando carta do jogador " + otherPlayersArea[playerToLook].name);
+                            log("Olhando carta do jogador " + otherPlayersArea[playerToLook].name);
                         }
 
                         foreach (var card in botController.getCardsAndPlace())
                         {
-                            Debug.Log("Seer viu -> " + card.Key + ", " + card.Value.name);
+                            log("Seer viu -> " + card.Key + ", " + card.Value.name);
                         }
                     }
                     break;
@@ -173,13 +197,13 @@ public class GameController : MonoBehaviour
                     GameObject robbedCard = otherPlayersArea[playerToRob].transform.GetChild(0).gameObject;
 
                     botController.addCardAndPlace(robbedCard.transform.parent.name, robberCard);
-                    Debug.Log("Roubando carta do jogador " + robbedCard.transform.parent.name);
+                    log("Roubando carta do jogador " + robbedCard.transform.parent.name);
 
                     swapCards(robberCard, robbedCard);
 
                     foreach (var card in botController.getCardsAndPlace())
                     {
-                        Debug.Log("Robber viu -> " + card.Key + ", " + card.Value.name);
+                        log("Robber viu -> " + card.Key + ", " + card.Value.name);
                     }
 
                     break;
@@ -191,7 +215,7 @@ public class GameController : MonoBehaviour
 
                         foreach (var card in botController.getCardsAndPlace())
                         {
-                            Debug.Log("Lonely Werewolf viu -> " + card.Key + ", " + card.Value.name);
+                            log("Lonely Werewolf viu -> " + card.Key + ", " + card.Value.name);
                         }
                     }
                     else
@@ -203,7 +227,7 @@ public class GameController : MonoBehaviour
 
                             foreach (var card in wolfController.getCardsAndPlace())
                             {
-                                Debug.Log(wolfController.name + " wolf0 viu -> " + card.Key + ", " + card.Value.name);
+                                log(wolfController.name + " wolf0 viu -> " + card.Key + ", " + card.Value.name);
                             }
                         }
 
@@ -213,7 +237,7 @@ public class GameController : MonoBehaviour
                             wolfController.addCardAndPlace(wolfs[0].name, wolfs[0].transform.GetChild(0).gameObject);
                             foreach (var card in wolfController.getCardsAndPlace())
                             {
-                                Debug.Log(wolfController.name + " wolf1 viu -> " + card.Key + ", " + card.Value.name);
+                                log(wolfController.name + " wolf1 viu -> " + card.Key + ", " + card.Value.name);
                             }
                         }
                     }
@@ -333,11 +357,11 @@ public class GameController : MonoBehaviour
             if (hit.collider != null)
             {
                 GameObject selectedCard = hit.collider.gameObject;
-                if (selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract && playerController.getMaxInteractions() > 0)
+                if (selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract && playerController.isHasRemainingInteractions())
                 {
                     selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract = false;
                     StartCoroutine(revealCard(selectedCard.transform, true));
-                    playerController.addInteractedCard(selectedCard);
+                    playerController.addCardAndPlace(selectedCard.transform.parent.name + selectedCard.transform.GetSiblingIndex(), selectedCard);
                     playerController.setMaxInteractions(playerController.getMaxInteractions() - 1);
 
                     checkNightActions(selectedCard);
@@ -347,7 +371,7 @@ public class GameController : MonoBehaviour
     }
     public void endTurn()
     {
-        playerController.turnActive = false;
+        playerController.setTurnActive(false);
         toggleAllCardsVisible(false);
         TimerController.active = false;
         CURRENT_ROLE++;
@@ -355,7 +379,7 @@ public class GameController : MonoBehaviour
 
     private void checkTimer()
     {
-        if (!TimerController.active && playerController.turnActive)
+        if (!TimerController.active && playerController.isTurnActive())
         {
             endTurn();
         }
@@ -406,7 +430,7 @@ public class GameController : MonoBehaviour
     {
         if (playerController.getCardName(playerController.initialCard).Equals(CharactersNamesConstants.seer))
         {
-            if (playerController.getMaxInteractions() > 0)
+            if (playerController.isHasRemainingInteractions())
             {
                 if (interactedCard.transform.parent.name == PlayersAreasConstants.middle)
                 {
@@ -444,12 +468,16 @@ public class GameController : MonoBehaviour
     {
         Transform tempParent = secondCard.transform.parent;
 
-        if (isPlayerCard(firstCard))
+        if (!isPlayerCard(firstCard))
         {
-
+            firstCard.transform.parent.GetComponent<BotController>().setCurrentCard(secondCard);
+        }
+        else
+        {
             playerController.setCurrentCard(secondCard);
             playerController.setCurrentCardName(playerController.getCardName(secondCard));
         }
+
 
         if (!isPlayerCard(secondCard))
         {
@@ -531,5 +559,11 @@ public class GameController : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void log(string text)
+    {
+        if (debug)
+            Debug.Log(text);
     }
 }

@@ -14,7 +14,7 @@ public class PlayerBase : MonoBehaviour, IPlayer
         initialCard = transform.GetChild(0).gameObject;
         currentCard = initialCard;
         setCurrentCardName(getCardName(getInitialCard()));
-        Debug.Log(name + " -> " + initialCard);
+        // Debug.Log(name + " -> " + initialCard);
     }
 
     public GameObject getInitialCard()
