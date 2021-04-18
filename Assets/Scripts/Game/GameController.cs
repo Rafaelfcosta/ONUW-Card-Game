@@ -82,20 +82,23 @@ public class GameController : MonoBehaviour
 
 
             Debug.Log("-----------SUMMARY----------");
-            Debug.Log("player initial card ->" + playerController.getInitialCard().name);
-            Debug.Log("player current card ->" + playerController.getCurrentCard().name);
-            foreach (var card in playerController.getCardsAndPlace())
-            {
-                Debug.Log("player " + " -> " + card.Key + ", " + card.Value.name);
-            }
             foreach (var area in playersCardsArea)
             {
-                BotController botController = area.GetComponent<BotController>();
-                if (botController != null)
+                PlayerBase controller;
+                if (area.name.Equals(PlayersAreasConstants.player))
                 {
-                    Debug.Log(area.name + " initial card ->" + botController.getInitialCard().name);
-                    Debug.Log(area.name + " current card ->" + botController.getCurrentCard().name);
-                    foreach (var card in botController.getCardsAndPlace())
+                    controller = area.GetComponent<PlayerBase>() as PlayerController;
+                }
+                else
+                {
+                    controller = area.GetComponent<PlayerBase>() as BotController;
+                }
+
+                if (controller != null)
+                {
+                    Debug.Log(area.name + " initial card ->" + controller.getInitialCard().name);
+                    Debug.Log(area.name + " current card ->" + controller.getCurrentCard().name);
+                    foreach (var card in controller.getCardsAndPlace())
                     {
                         Debug.Log(area.name + " -> " + card.Key + ", " + card.Value.name);
                     }
