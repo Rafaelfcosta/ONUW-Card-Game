@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4973994830550834217
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4973994830550834219}
+  - component: {fileID: 4973994830550834216}
+  m_Layer: 0
+  m_Name: GameController
+  m_TagString: Untagged
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4973994830550834219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4973994830550834217}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -646, y: -0.53, z: 0}
+  m_LocalScale: {x: 7.5499, y: 1.45, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4973994830550834216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4973994830550834217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b91ee88264aa1e64ba15896d73c8263e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debug: 0
+  startedAsText: {fileID: 0}
+  hintText: {fileID: 0}
+  stageText: {fileID: 0}
+  playerController: {fileID: 0}
+  discussionArea: {fileID: 3551404361018962652, guid: 39a9cb4461db6db4d98c98d4f38a0e7a,
+    type: 3}
+  middleArea: {fileID: 0}
+  cards: []
+  botsCards: []
+  playersCardsArea:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  otherPlayersArea: []
+  wolfs: []
+  lonelyWolf: 1
+  CURRENT_ROLE: 0
+  CURRENT_STAGE: 0

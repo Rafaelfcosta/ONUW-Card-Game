@@ -1,20 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PlayerBase : MonoBehaviour, IPlayer
+public class PlayerBase : MonoBehaviour, IPlayer, IDiscussion
 {
     public GameObject initialCard;
     public GameObject currentCard;
     private string currentCardName;
+    private bool truthSaid = false;
+    public GameObject dialogBox;
     private Dictionary<string, GameObject> cardsAndPlace = new Dictionary<string, GameObject>();
 
-    protected virtual void Start()
+    public virtual void Start()
     {
-        initialCard = transform.GetChild(0).gameObject;
-        currentCard = initialCard;
+        setInitialCard(transform.GetChild(0).gameObject);
+        setCurrentCard(getInitialCard());
         setCurrentCardName(getCardName(getInitialCard()));
-        // Debug.Log(name + " -> " + initialCard);
+        // Debug.Log(name + " -> " + this.initialCard);
     }
 
     public GameObject getInitialCard()
@@ -35,6 +38,7 @@ public class PlayerBase : MonoBehaviour, IPlayer
     public void setCurrentCard(GameObject currentCard)
     {
         this.currentCard = currentCard;
+        setCurrentCardName(getCardName(currentCard));
     }
 
     public Dictionary<string, GameObject> getCardsAndPlace()
@@ -52,6 +56,11 @@ public class PlayerBase : MonoBehaviour, IPlayer
         return card.name.Substring(0, card.name.IndexOf("Card"));
     }
 
+    public string getName(string text)
+    {
+        return text.Substring(0, text.IndexOf("Card"));
+    }
+
     public string getCurrentCardName()
     {
         return this.currentCardName;
@@ -60,5 +69,63 @@ public class PlayerBase : MonoBehaviour, IPlayer
     public void setCurrentCardName(string currentCardName)
     {
         this.currentCardName = currentCardName;
+    }
+
+    public bool isTruthSaid()
+    {
+        return this.truthSaid;
+    }
+
+    public void setTruthSaid(bool truthSaid)
+    {
+        this.truthSaid = truthSaid;
+    }
+
+    public virtual void sayTruth()
+    {
+        setTruthSaid(true);
+        dialogBox.SetActive(true);
+        Text sayTruthText = dialogBox.transform.GetChild(0).GetComponent<Text>();
+        string text = DiscussionConstants.iStartedAs + CharactersNamesConstants.charsNameDictionary[getCardName(getInitialCard())];
+
+        if (getCardsAndPlace().Count > 0)
+        {
+            int count = 0;
+            foreach (var card in getCardsAndPlace())
+            {
+                if (card.Key.StartsWith(PlayersAreasConstants.middle))
+                {
+                    if (count.Equals(0))
+                    {
+                        text += "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a + CharactersNamesConstants.charsNameDictionary[getCardName(card.Value)];
+                    }
+                    else
+                    {
+                        text += DiscussionConstants.andA + CharactersNamesConstants.charsNameDictionary[getCardName(card.Value)];
+                    }
+                }
+                else
+                {
+                    if (getCardName(getInitialCard()).Equals(CharactersNamesConstants.robber))
+                    {
+                        text += "\n" + DiscussionConstants.switchedCardWith + PlayersAreasConstants.playersAreaDictionary[card.Key];
+                    }
+                    else
+                    {
+                        text += "\n" + DiscussionConstants.lookedAtPlayer + PlayersAreasConstants.playersAreaDictionary[card.Key];
+                    }
+
+                    text += DiscussionConstants.andItWas + CharactersNamesConstants.charsNameDictionary[getCardName(card.Value)];
+                }
+                count++;
+            }
+        }
+
+        sayTruthText.text = text;
+    }
+
+    public void askPlayer(GameObject player)
+    {
+        throw new System.NotImplementedException();
     }
 }
