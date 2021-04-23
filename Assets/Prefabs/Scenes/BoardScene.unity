@@ -1829,6 +1829,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voteBtn: {fileID: 172931969}
+  middleArea: {fileID: 1092514123}
 --- !u!1 &888163064
 GameObject:
   m_ObjectHideFlags: 0
