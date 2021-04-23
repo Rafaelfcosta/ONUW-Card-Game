@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
     private BotController botController = null;
     public GameObject discussionArea;
     public GameObject middleArea;
+    public GameObject Votation;
     public List<GameObject> cards = new List<GameObject>();
     public List<string> botsCards = new List<string>();
     public List<GameObject> playersCardsArea = new List<GameObject>();
@@ -105,14 +106,22 @@ public class GameController : MonoBehaviour
                 }
             }
 
+            Invoke("nextStage", 5);
         }
         else
         {
             if (stage == GameStage.VOTING)
             {
                 stageText.text = "Etapa atual: " + "Votação";
+
+                middleArea.SetActive(false);
+                Votation.SetActive(true);
             }
         }
+    }
+
+    void nextStage(){
+        startStage(GameStage.VOTING);
     }
 
     private void doNightActionFor(string role)

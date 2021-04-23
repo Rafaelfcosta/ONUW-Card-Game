@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6731568745791406802}
   - component: {fileID: 8687098864953766735}
   - component: {fileID: 99286070}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: PlayerCardArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,3 +90,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialCard: {fileID: 0}
   currentCard: {fileID: 0}
+  dialogBox: {fileID: 0}
