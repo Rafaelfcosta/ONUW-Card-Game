@@ -120,7 +120,8 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void nextStage(){
+    void nextStage()
+    {
         startStage(GameStage.VOTING);
     }
 
@@ -358,6 +359,7 @@ public class GameController : MonoBehaviour
     public void endTurn()
     {
         playerController.setTurnActive(false);
+        playerController.setMaxInteractions(0);
         toggleAllCardsVisible(false);
         TimerController.active = false;
         CURRENT_ROLE++;
@@ -426,27 +428,26 @@ public class GameController : MonoBehaviour
     {
         if (playerController.getCardName(playerController.initialCard).Equals(CharactersNamesConstants.seer))
         {
-            if (playerController.isHasRemainingInteractions())
+
+            if (interactedCard.transform.parent.name.Equals(PlayersAreasConstants.middle))
             {
-                if (interactedCard.transform.parent.name.Equals(PlayersAreasConstants.middle))
+                playerController.addCardAndPlace(interactedCard.transform.parent.name + interactedCard.transform.GetSiblingIndex(), interactedCard);
+                foreach (GameObject card in cards)
                 {
-                    playerController.addCardAndPlace(interactedCard.transform.parent.name + interactedCard.transform.GetSiblingIndex(), interactedCard);
-                    foreach (GameObject card in cards)
+                    string areaName = card.transform.parent.name;
+                    if (areaName != PlayersAreasConstants.middle)
                     {
-                        string areaName = card.transform.parent.name;
-                        if (areaName != PlayersAreasConstants.middle)
-                        {
-                            card.GetComponent<CardInteractionController>().CanPlayerInteract = false;
-                        }
+                        card.GetComponent<CardInteractionController>().CanPlayerInteract = false;
                     }
-                    playerController.setMaxInteractions(playerController.getMaxInteractions() - 1);
                 }
-                else
-                {
-                    playerController.addCardAndPlace(interactedCard.transform.parent.name, interactedCard);
-                    playerController.setMaxInteractions(playerController.getMaxInteractions() - 1);
-                }
+                playerController.setMaxInteractions(playerController.getMaxInteractions() - 1);
             }
+            else
+            {
+                playerController.addCardAndPlace(interactedCard.transform.parent.name, interactedCard);
+                playerController.setMaxInteractions(0);
+            }
+
         }
     }
 
