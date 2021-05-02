@@ -16,7 +16,7 @@ public class DrawCards : MonoBehaviour
         giveCards();
     }
 
-    private void setupCards()
+    public void setupCards()
     {
         cardController = GetComponent<CardController>();
         cards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));

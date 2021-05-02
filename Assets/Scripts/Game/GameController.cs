@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
     public List<GameObject> playersCardsArea = new List<GameObject>();
     public List<GameObject> otherPlayersArea = new List<GameObject>();
     public List<GameObject> wolfs = new List<GameObject>();
+    private bool hasWerewolf = false;
     public bool lonelyWolf = true;
     private bool doBotWolfAction = true;
     public CharsSequence CURRENT_ROLE = CharsSequence.Werewolf;
@@ -74,48 +75,68 @@ public class GameController : MonoBehaviour
 
     private void startStage(GameStage stage)
     {
-        if (stage == GameStage.DAY)
+        if (stage == GameStage.NIGHT)
         {
-            stageText.text = "Etapa atual: " + "Dia";
-            hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
-            Instantiate(discussionArea, GameObject.Find("UI").transform, false);
-
-
-            Debug.Log("-----------SUMMARY----------");
-            foreach (var area in playersCardsArea)
-            {
-                PlayerBase controller;
-                if (area.name.Equals(PlayersAreasConstants.player))
-                {
-                    controller = area.GetComponent<PlayerBase>() as PlayerController;
-                }
-                else
-                {
-                    controller = area.GetComponent<PlayerBase>() as BotController;
-                }
-
-                if (controller != null)
-                {
-                    Debug.Log(area.name + " initial card ->" + controller.getInitialCard().name);
-                    Debug.Log(area.name + " current card ->" + controller.getCurrentCard().name);
-                    foreach (var card in controller.getCardsAndPlace())
-                    {
-                        Debug.Log(area.name + " -> " + card.Key + ", " + card.Value.name);
-                    }
-                    controller.sayTruth();
-                }
-            }
-
-            Invoke("nextStage", 5);
+            stageText.text = "Etapa atual: " + "Noite";
         }
         else
         {
-            if (stage == GameStage.VOTING)
+            if (stage == GameStage.DAY)
             {
-                stageText.text = "Etapa atual: " + "Votação";
+                stageText.text = "Etapa atual: " + "Dia";
+                hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
+                Instantiate(discussionArea, GameObject.Find("UI").transform, false);
 
-                middleArea.SetActive(false);
-                Votation.SetActive(true);
+
+                log("-----------SUMMARY----------");
+                foreach (var area in playersCardsArea)
+                {
+                    PlayerBase controller;
+                    if (area.name.Equals(PlayersAreasConstants.player))
+                    {
+                        controller = area.GetComponent<PlayerBase>() as PlayerController;
+                    }
+                    else
+                    {
+                        controller = area.GetComponent<PlayerBase>() as BotController;
+                    }
+
+                    if (controller != null)
+                    {
+                        log(area.name + " initial card ->" + controller.getInitialCard().name);
+                        log(area.name + " current card ->" + controller.getCurrentCard().name);
+                        foreach (var card in controller.getCardsAndPlace())
+                        {
+                            log(area.name + " -> " + card.Key + ", " + card.Value.name);
+                        }
+                        controller.sayTruth();
+                    }
+                }
+
+                Invoke("nextStage", 1);
+            }
+            else
+            {
+                if (stage == GameStage.VOTING)
+                {
+                    stageText.text = "Etapa atual: " + "Votação";
+
+                    middleArea.SetActive(false);
+                    Votation.SetActive(true);
+
+                    foreach (var area in playersCardsArea)
+                    {
+                        BotController controller;
+                        if (!area.name.Equals(PlayersAreasConstants.player))
+                        {
+                            controller = area.GetComponent<BotController>();
+                            if (controller != null)
+                            {
+                                controller.vote();
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -250,6 +271,7 @@ public class GameController : MonoBehaviour
             {
                 wolfs.Add(area);
                 count++;
+                setHasWerewolf(true);
             }
 
             if (count > 1)
@@ -565,5 +587,56 @@ public class GameController : MonoBehaviour
     {
         if (debug)
             Debug.Log(text);
+    }
+
+    public void restartGame()
+    {
+        removeCards();
+        reDrawCards();
+
+        foreach (var player in playersCardsArea)
+        {
+            PlayerBase controller;
+            if (player.name.Equals(PlayersAreasConstants.player))
+            {
+                controller = player.GetComponent<PlayerBase>() as PlayerController;
+            }
+            else
+            {
+                controller = player.GetComponent<PlayerBase>() as BotController;
+            }
+
+            controller.Restart();
+        }
+
+        CURRENT_STAGE = GameStage.NIGHT;
+        CURRENT_ROLE = CharsSequence.Werewolf;
+        initialSetup();
+        startStage(CURRENT_STAGE);
+    }
+
+    private void removeCards()
+    {
+        for (int i = 0; i < middleArea.transform.childCount; i++)
+        {
+            Destroy(middleArea.transform.GetChild(i).gameObject);
+        }
+    }
+
+    private void reDrawCards()
+    {
+        DrawCards drawCards = GetComponent<DrawCards>();
+        drawCards.setupCards();
+        drawCards.giveCards();
+    }
+
+    public bool isHasWerewolf()
+    {
+        return this.hasWerewolf;
+    }
+
+    public void setHasWerewolf(bool hasWerewolf)
+    {
+        this.hasWerewolf = hasWerewolf;
     }
 }

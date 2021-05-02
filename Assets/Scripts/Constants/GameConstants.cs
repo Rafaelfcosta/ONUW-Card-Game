@@ -25,12 +25,14 @@ public static class PlayersAreasConstants
     public const string bot1 = "Player2CardArea";
     public const string bot2 = "Player3CardArea";
     public const string bot3 = "Player4CardArea";
+    public const string noPlayer = "none";
     public static readonly Dictionary<string, string> playersAreaDictionary = new Dictionary<string, string>
     {
         { player, "Jogador 1" },
         { bot1, "Jogador 2" },
         { bot2, "Jogador 3" },
-        { bot3, "Jogador 4" }
+        { bot3, "Jogador 4" },
+        { noPlayer, "Nenhum" },
     };
 }
 

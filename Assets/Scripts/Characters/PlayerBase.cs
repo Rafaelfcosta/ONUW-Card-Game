@@ -20,6 +20,14 @@ public class PlayerBase : MonoBehaviour, IPlayer, IDiscussion
         // Debug.Log(name + " -> " + this.initialCard);
     }
 
+    public void Restart()
+    {
+        setInitialCard(transform.GetChild(1).gameObject);
+        setCurrentCard(getInitialCard());
+        setCurrentCardName(getCardName(getInitialCard()));
+        Destroy(transform.GetChild(0).gameObject);
+    }
+
     public GameObject getInitialCard()
     {
         return this.initialCard;
@@ -128,4 +136,45 @@ public class PlayerBase : MonoBehaviour, IPlayer, IDiscussion
     {
         throw new System.NotImplementedException();
     }
+
+    public bool isWerewolf()
+    {
+        return getCurrentCardName().Equals(CharactersNamesConstants.werewolf);
+    }
+
+    public bool isVillager()
+    {
+        return getCurrentCardName().Equals(CharactersNamesConstants.villager);
+    }
+
+    public bool isRobber()
+    {
+        return getCurrentCardName().Equals(CharactersNamesConstants.robber);
+    }
+
+    public bool isSeer()
+    {
+        return getCurrentCardName().Equals(CharactersNamesConstants.seer);
+    }
+
+    public bool startedAsWerewolf()
+    {
+        return getCardName(getInitialCard()).Equals(CharactersNamesConstants.werewolf);
+    }
+
+    public bool startedAsRobber()
+    {
+        return getCardName(getInitialCard()).Equals(CharactersNamesConstants.robber);
+    }
+
+    public void won()
+    {
+        Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " ganhou");
+    }
+
+    public void lost()
+    {
+        Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " perdeu");
+    }
+
 }
