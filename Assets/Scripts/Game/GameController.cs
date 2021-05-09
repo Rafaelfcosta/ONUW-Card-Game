@@ -12,23 +12,25 @@ public class GameController : MonoBehaviour
     public Text startedAsText;
     public Text hintText;
     public Text stageText;
-    public PlayerController playerController;
-    private BotController botController = null;
     public GameObject discussionArea;
-    public GameObject middleArea;
     public GameObject Votation;
-    public List<GameObject> cards = new List<GameObject>();
-    public List<string> botsCards = new List<string>();
-    public List<GameObject> playersCardsArea = new List<GameObject>();
-    public List<GameObject> otherPlayersArea = new List<GameObject>();
-    public List<GameObject> wolfs = new List<GameObject>();
-    private bool hasWerewolf = false;
-    public bool lonelyWolf = true;
-    private bool doBotWolfAction = true;
-    public CharsSequence CURRENT_ROLE = CharsSequence.Werewolf;
-    public GameStage CURRENT_STAGE = GameStage.NIGHT;
     public enum CharsSequence { Werewolf, Seer, Robber, Villager, None };
-    public enum GameStage { NIGHT, DAY, VOTING };
+    public CharsSequence CURRENT_ROLE = CharsSequence.Werewolf;
+    private PlayerController playerController;
+    private BotController botController = null;
+    private GameObject middleArea;
+    private List<PlayerBase> players;
+    private enum GameStage { NIGHT, DAY, VOTING };
+    private GameStage CURRENT_STAGE = GameStage.NIGHT;
+    private List<GameObject> cards = new List<GameObject>();
+    private List<string> botsCards = new List<string>();
+    private List<PlayerBase> otherPlayers = new List<PlayerBase>();
+    private List<PlayerBase> wolfs = new List<PlayerBase>();
+    private bool lonelyWolf = true;
+    private bool doBotWolfAction = true;
+    private bool hasWerewolf = false;
+    private bool hasHumanPlayer = false;
+
 
     void Start()
     {
@@ -44,7 +46,6 @@ public class GameController : MonoBehaviour
 
     private void wakeOrder()
     {
-        string playerCard = playerController.getCardName(playerController.getInitialCard());
         if (CURRENT_ROLE <= CharsSequence.Villager)
         {
 
@@ -54,14 +55,26 @@ public class GameController : MonoBehaviour
                 doBotWolfAction = false;
             }
 
-            if (playerCard.Equals(CURRENT_ROLE.ToString()) && !playerCard.Equals(CharsSequence.Villager.ToString()))
+
+            if (hasHumanPlayer)
             {
-                return;
+
+                if (playerController.getInitialCardName().Equals(CURRENT_ROLE.ToString()) && !playerController.isVillager())
+                {
+                    return;
+                }
+                else
+                {
+                    if (!CURRENT_ROLE.ToString().Equals(CharactersNamesConstants.werewolf))
+                        doNightActionFor(CURRENT_ROLE.ToString());
+                }
             }
             else
             {
+
                 if (!CURRENT_ROLE.ToString().Equals(CharactersNamesConstants.werewolf))
                     doNightActionFor(CURRENT_ROLE.ToString());
+
             }
 
             NextPlayer();
@@ -84,33 +97,25 @@ public class GameController : MonoBehaviour
             if (stage == GameStage.DAY)
             {
                 stageText.text = "Etapa atual: " + "Dia";
-                hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
-                Instantiate(discussionArea, GameObject.Find("UI").transform, false);
+
+                if (hasHumanPlayer)
+                {
+                    hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
+                    Instantiate(discussionArea, GameObject.Find("UI").transform, false);
+                }
 
 
                 log("-----------SUMMARY----------");
-                foreach (var area in playersCardsArea)
+                foreach (var player in players)
                 {
-                    PlayerBase controller;
-                    if (area.name.Equals(PlayersAreasConstants.player))
-                    {
-                        controller = area.GetComponent<PlayerBase>() as PlayerController;
-                    }
-                    else
-                    {
-                        controller = area.GetComponent<PlayerBase>() as BotController;
-                    }
 
-                    if (controller != null)
+                    log(player.gameObject.name + " initial card ->" + player.getInitialCard().name);
+                    log(player.gameObject.name + " current card ->" + player.getCurrentCard().name);
+                    foreach (var card in player.getCardsAndPlace())
                     {
-                        log(area.name + " initial card ->" + controller.getInitialCard().name);
-                        log(area.name + " current card ->" + controller.getCurrentCard().name);
-                        foreach (var card in controller.getCardsAndPlace())
-                        {
-                            log(area.name + " -> " + card.Key + ", " + card.Value.name);
-                        }
-                        controller.sayTruth();
+                        log(player.gameObject.name + " -> " + card.Key + ", " + card.Value.name);
                     }
+                    player.sayTruth();
                 }
 
                 Invoke("nextStage", 1);
@@ -121,19 +126,17 @@ public class GameController : MonoBehaviour
                 {
                     stageText.text = "Etapa atual: " + "Votação";
 
-                    middleArea.SetActive(false);
-                    Votation.SetActive(true);
-
-                    foreach (var area in playersCardsArea)
+                    if (hasHumanPlayer)
                     {
-                        BotController controller;
-                        if (!area.name.Equals(PlayersAreasConstants.player))
+                        middleArea.SetActive(false);
+                        Votation.SetActive(true);
+                    }
+                    
+                    foreach (var player in players)
+                    {
+                        if (!player.isHumanPlayer())
                         {
-                            controller = area.GetComponent<BotController>();
-                            if (controller != null)
-                            {
-                                controller.vote();
-                            }
+                            player.vote();
                         }
                     }
                 }
@@ -151,27 +154,27 @@ public class GameController : MonoBehaviour
         if (botsCards.Contains(role) || role == CharactersNamesConstants.villager)
         {
             botController = null;
-            foreach (GameObject playerArea in playersCardsArea)
+            foreach (var player in players)
             {
-                if (!playerArea.name.Equals(PlayersAreasConstants.player))
+                if (!player.isHumanPlayer())
                 {
-                    if (playerArea.transform.GetChild(0).gameObject.name.Contains(role))
+                    if (player.getInitialCardName().Contains(role))
                     {
-                        botController = playerArea.GetComponent<BotController>();
+                        botController = player as BotController;
                     }
                 }
             }
 
             if (!role.Equals(CharactersNamesConstants.villager))
             {
-                otherPlayersArea.Clear();
+                otherPlayers.Clear();
                 if (botController != null)
                 {
-                    foreach (GameObject playerArea in playersCardsArea)
+                    foreach (var player in players)
                     {
-                        if (!playerArea.name.Equals(botController.name))
+                        if (!player.gameObject.name.Equals(botController.gameObject.name))
                         {
-                            otherPlayersArea.Add(playerArea);
+                            otherPlayers.Add(player);
                         }
                     }
                 }
@@ -209,17 +212,17 @@ public class GameController : MonoBehaviour
                         }
                         else
                         {
-                            int playerToLook = UnityEngine.Random.Range(0, otherPlayersArea.Count);
-                            GameObject lookedCard = otherPlayersArea[playerToLook].transform.GetChild(0).gameObject;
+                            int playerToLook = UnityEngine.Random.Range(0, otherPlayers.Count);
+                            GameObject lookedCard = otherPlayers[playerToLook].transform.GetChild(0).gameObject;
 
                             botController.addCardAndPlace(lookedCard.transform.parent.name, lookedCard);
                         }
                     }
                     break;
                 case "Robber":
-                    int playerToRob = UnityEngine.Random.Range(0, otherPlayersArea.Count);
+                    int playerToRob = UnityEngine.Random.Range(0, otherPlayers.Count);
                     GameObject robberCard = botController.transform.GetChild(0).gameObject;
-                    GameObject robbedCard = otherPlayersArea[playerToRob].transform.GetChild(0).gameObject;
+                    GameObject robbedCard = otherPlayers[playerToRob].transform.GetChild(0).gameObject;
 
                     botController.addCardAndPlace(robbedCard.transform.parent.name, robbedCard);
                     swapCards(robberCard, robbedCard);
@@ -233,16 +236,18 @@ public class GameController : MonoBehaviour
                     }
                     else
                     {
-                        if (!wolfs[0].name.Equals(PlayersAreasConstants.player))
+                        foreach (var wolf in wolfs)
                         {
-                            BotController wolfController = wolfs[0].GetComponent<BotController>();
-                            wolfController.addCardAndPlace(wolfs[1].name, wolfs[1].transform.GetChild(0).gameObject);
-                        }
-
-                        if (!wolfs[1].name.Equals(PlayersAreasConstants.player))
-                        {
-                            BotController wolfController = wolfs[1].GetComponent<BotController>();
-                            wolfController.addCardAndPlace(wolfs[0].name, wolfs[0].transform.GetChild(0).gameObject);
+                            if (!wolf.isHumanPlayer())
+                            {
+                                foreach (var otherWolf in wolfs)
+                                {
+                                    if (otherWolf.gameObject.name != wolf.gameObject.name)
+                                    {
+                                        wolf.addCardAndPlace(otherWolf.gameObject.name, otherWolf.getInitialCard());
+                                    }
+                                }
+                            }
                         }
                     }
                     break;
@@ -258,18 +263,33 @@ public class GameController : MonoBehaviour
 
     private void initialSetup()
     {
+        if (players != null)
+        {
+            players.Clear();
+
+        }
+        cards.Clear();
+
+        players = new List<PlayerBase>(gameObject.FindComponentsInChildrenWithTag<PlayerBase>("player"));
+        this.middleArea = transform.Find("MiddleArea").gameObject;
+
         //Check if trigger lonely wolf setup
         int count = 0;
-        foreach (GameObject area in playersCardsArea)
+        foreach (PlayerBase player in players)
         {
-            if (!area.name.Equals(PlayersAreasConstants.player))
+            if (!player.isHumanPlayer())
             {
-                botsCards.Add(playerController.getCardName(area.transform.GetChild(0).gameObject));
+                botsCards.Add(player.getCurrentCardName());
+            }
+            else
+            {
+                this.playerController = player as PlayerController;
+                setHasHumanPlayer(true);
             }
 
-            if (area.transform.GetChild(0).gameObject.name.Contains(CharactersNamesConstants.werewolf))
+            if (player.isWerewolf())
             {
-                wolfs.Add(area);
+                wolfs.Add(player);
                 count++;
                 setHasWerewolf(true);
             }
@@ -279,73 +299,86 @@ public class GameController : MonoBehaviour
                 lonelyWolf = false;
             }
 
+            cards.Add(player.getCurrentCard());
+        }
+
+        foreach (Transform middleCard in middleArea.transform)
+        {
+            cards.Add(middleCard.gameObject);
         }
 
         //Configure player interactable cards
-        cards.AddRange(GameObject.FindGameObjectsWithTag("Card"));
-        foreach (GameObject card in cards)
+        if (hasHumanPlayer)
         {
-
-            GameObject area = card.transform.parent.gameObject;
-            string areaName = card.transform.parent.name;
-            CardInteractionController cardInteractionController = card.GetComponent<CardInteractionController>();
-
-            if (areaName.Equals(PlayersAreasConstants.player))
-            {
-                if (playerController.getCardName(playerController.currentCard) != CharactersNamesConstants.villager)
-                    toggleCard(card, true);
-            }
-
-            switch (playerController.getCurrentCardName())
+            foreach (GameObject card in cards)
             {
 
-                case "Seer":
-                    setPlayerCardText("Vidente", "Você pode olhar duas cartas ao centro ou a carta de um jogador.");
-                    playerController.setMaxInteractions(2);
-                    if (areaName != PlayersAreasConstants.player)
+                GameObject area = card.transform.parent.gameObject;
+                string areaName = card.transform.parent.name;
+                CardInteractionController cardInteractionController = card.GetComponent<CardInteractionController>();
+
+                PlayerBase player = card.transform.parent.GetComponentInParent<PlayerBase>();
+
+                if (player != null && player.isHumanPlayer())
+                {
+                    if (!player.isVillager())
                     {
-                        cardInteractionController.CanPlayerInteract = true;
+                        toggleCard(card, true);
                     }
-                    break;
-                case "Robber":
-                    setPlayerCardText("Ladrão", "Você pode escolher a carta de outro jogador e trocar pela sua.");
-                    playerController.setMaxInteractions(1);
-                    if (areaName != PlayersAreasConstants.middle && areaName != PlayersAreasConstants.player)
-                    {
-                        cardInteractionController.CanPlayerInteract = true;
-                    }
-                    break;
-                case "Werewolf":
-                    if (lonelyWolf)
-                    {
-                        setPlayerCardText("Lobisomem", "Você é o único lobisomem, por isso pode olhar uma carta ao centro.");
-                        playerController.setMaxInteractions(1);
-                    }
-                    else
-                    {
-                        setPlayerCardText("Lobisomem", "Neste momento os lobisomens devem conhecer um ao outro.");
-                        if (playerController.getCardName(card.gameObject).Equals(CharactersNamesConstants.werewolf) && !card.transform.parent.name.Equals(PlayersAreasConstants.middle))
+                }
+
+                switch (playerController.getCurrentCardName())
+                {
+
+                    case "Seer":
+                        setPlayerCardText("Vidente", "Você pode olhar duas cartas ao centro ou a carta de um jogador.");
+                        playerController.setMaxInteractions(2);
+
+                        if (areaName != PlayersAreasConstants.player)
                         {
-                            card.transform.GetChild(0).gameObject.SetActive(true);
-                            card.transform.GetChild(1).gameObject.SetActive(false);
-
-                            string parentName = card.transform.parent.name;
-                            if (!parentName.Equals(PlayersAreasConstants.player))
+                            cardInteractionController.CanPlayerInteract = true;
+                        }
+                        break;
+                    case "Robber":
+                        setPlayerCardText("Ladrão", "Você pode escolher a carta de outro jogador e trocar pela sua.");
+                        playerController.setMaxInteractions(1);
+                        if (areaName != PlayersAreasConstants.middle && areaName != PlayersAreasConstants.player)
+                        {
+                            cardInteractionController.CanPlayerInteract = true;
+                        }
+                        break;
+                    case "Werewolf":
+                        if (lonelyWolf)
+                        {
+                            setPlayerCardText("Lobisomem", "Você é o único lobisomem, por isso pode olhar uma carta ao centro.");
+                            playerController.setMaxInteractions(1);
+                        }
+                        else
+                        {
+                            setPlayerCardText("Lobisomem", "Neste momento os lobisomens devem conhecer um ao outro.");
+                            if (playerController.getCardName(card.gameObject).Equals(CharactersNamesConstants.werewolf) && !card.transform.parent.name.Equals(PlayersAreasConstants.middle))
                             {
-                                playerController.addCardAndPlace(parentName, card);
+                                card.transform.GetChild(0).gameObject.SetActive(true);
+                                card.transform.GetChild(1).gameObject.SetActive(false);
+
+                                string parentName = card.transform.parent.name;
+                                if (!parentName.Equals(PlayersAreasConstants.player))
+                                {
+                                    playerController.addCardAndPlace(parentName, card);
+                                }
                             }
                         }
-                    }
 
-                    if (areaName == PlayersAreasConstants.middle)
-                    {
-                        cardInteractionController.CanPlayerInteract = true;
-                    }
-                    break;
-                default:
-                    setPlayerCardText("Aldeão", "Como um aldeão, você não possui ações na etapa da noite");
-                    cardInteractionController.CanPlayerInteract = false;
-                    break;
+                        if (areaName == PlayersAreasConstants.middle)
+                        {
+                            cardInteractionController.CanPlayerInteract = true;
+                        }
+                        break;
+                    default:
+                        setPlayerCardText("Aldeão", "Como um aldeão, você não possui ações na etapa da noite");
+                        cardInteractionController.CanPlayerInteract = false;
+                        break;
+                }
             }
         }
     }
@@ -594,21 +627,6 @@ public class GameController : MonoBehaviour
         removeCards();
         reDrawCards();
 
-        foreach (var player in playersCardsArea)
-        {
-            PlayerBase controller;
-            if (player.name.Equals(PlayersAreasConstants.player))
-            {
-                controller = player.GetComponent<PlayerBase>() as PlayerController;
-            }
-            else
-            {
-                controller = player.GetComponent<PlayerBase>() as BotController;
-            }
-
-            controller.Restart();
-        }
-
         CURRENT_STAGE = GameStage.NIGHT;
         CURRENT_ROLE = CharsSequence.Werewolf;
         initialSetup();
@@ -639,4 +657,20 @@ public class GameController : MonoBehaviour
     {
         this.hasWerewolf = hasWerewolf;
     }
+
+    public List<PlayerBase> getPlayers()
+    {
+        return this.players;
+    }
+
+    public bool isHasHumanPlayer()
+    {
+        return this.hasHumanPlayer;
+    }
+
+    public void setHasHumanPlayer(bool hasHumanPlayer)
+    {
+        this.hasHumanPlayer = hasHumanPlayer;
+    }
+
 }

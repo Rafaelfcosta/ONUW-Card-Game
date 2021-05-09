@@ -1,31 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using SharpNeat.Phenomes;
 using UnityEngine;
 using UnityEngine.UI;
+using UnitySharpNEAT;
 
-public class PlayerBase : MonoBehaviour, IPlayer, IDiscussion
+public class PlayerBase : UnitController, IPlayer, IDiscussion
 {
     public GameObject initialCard;
     public GameObject currentCard;
-    private string currentCardName;
     private bool truthSaid = false;
     public GameObject dialogBox;
     private Dictionary<string, GameObject> cardsAndPlace = new Dictionary<string, GameObject>();
-
     public virtual void Start()
+    {
+        initializePlayer();
+    }
+
+    // private void FixedUpdate()
+    // {
+
+    // }
+
+    public void initializePlayer()
     {
         setInitialCard(transform.GetChild(0).gameObject);
         setCurrentCard(getInitialCard());
-        setCurrentCardName(getCardName(getInitialCard()));
         // Debug.Log(name + " -> " + this.initialCard);
-    }
-
-    public void Restart()
-    {
-        setInitialCard(transform.GetChild(1).gameObject);
-        setCurrentCard(getInitialCard());
-        setCurrentCardName(getCardName(getInitialCard()));
-        Destroy(transform.GetChild(0).gameObject);
     }
 
     public GameObject getInitialCard()
@@ -43,10 +44,15 @@ public class PlayerBase : MonoBehaviour, IPlayer, IDiscussion
         return this.currentCard;
     }
 
+    public string getInitialCardName()
+    {
+        string name = this.initialCard.name;
+        return name.Substring(0, name.IndexOf("Card"));
+    }
+
     public void setCurrentCard(GameObject currentCard)
     {
         this.currentCard = currentCard;
-        setCurrentCardName(getCardName(currentCard));
     }
 
     public Dictionary<string, GameObject> getCardsAndPlace()
@@ -64,19 +70,10 @@ public class PlayerBase : MonoBehaviour, IPlayer, IDiscussion
         return card.name.Substring(0, card.name.IndexOf("Card"));
     }
 
-    public string getName(string text)
-    {
-        return text.Substring(0, text.IndexOf("Card"));
-    }
-
     public string getCurrentCardName()
     {
-        return this.currentCardName;
-    }
-
-    public void setCurrentCardName(string currentCardName)
-    {
-        this.currentCardName = currentCardName;
+        string name = this.currentCard.name;
+        return name.Substring(0, name.IndexOf("Card"));
     }
 
     public bool isTruthSaid()
@@ -176,5 +173,58 @@ public class PlayerBase : MonoBehaviour, IPlayer, IDiscussion
     {
         Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " perdeu");
     }
+    public virtual void vote()
+    {
+        // UpdateBlackBoxInputs(BlackBox.InputSignalArray);
+        // BlackBox.Activate();
+        // UseBlackBoxOutpts(BlackBox.OutputSignalArray);
+    }
 
+    protected override void UpdateBlackBoxInputs(ISignalArray inputSignalArray)
+    {
+        // inputSignalArray[0] = 0;
+        // inputSignalArray[1] = 0;
+        // inputSignalArray[3] = 1;
+        // for (int i = 0; i < 90; i++)
+        // {
+        //     if (i % 2 == 0)
+        //     {
+        //         inputSignalArray[i] = 0;
+        //     }
+        //     else
+        //     {
+        //         inputSignalArray[i] = 1;
+        //     }
+        // }
+    }
+
+    protected override void UseBlackBoxOutpts(ISignalArray outputSignalArray)
+    {
+        // Debug.Log(outputSignalArray[0]);
+        // Debug.Log(outputSignalArray[1]);
+        // Debug.Log(outputSignalArray[2]);
+        // Debug.Log(outputSignalArray[3]);
+    }
+
+    public override float GetFitness()
+    {
+        // return UnityEngine.Random.Range(0, 11);
+        return 0;
+    }
+
+    protected override void HandleIsActiveChanged(bool newIsActive)
+    {
+        // throw new System.NotImplementedException();
+    }
+
+    public void addPlayerStatement()
+    {
+        //receber o acontecimento
+        //o player
+    }
+
+    public virtual bool isHumanPlayer()
+    {
+        return false;
+    }
 }

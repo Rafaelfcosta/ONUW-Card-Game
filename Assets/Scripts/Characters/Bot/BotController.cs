@@ -5,11 +5,15 @@ using UnityEngine.UI;
 
 public class BotController : PlayerBase
 {
-    public List<GameObject> players;
+    public List<GameObject> players = new List<GameObject>();
     public override void Start()
     {
         base.Start();
-        players = new List<GameObject>(GameObject.Find("GameController").GetComponent<GameController>().playersCardsArea);
+        PlayerBase[] components = transform.parent.gameObject.FindComponentsInChildrenWithTag<PlayerBase>("player");
+        foreach (var component in components)
+        {
+            players.Add(component.gameObject);
+        }
         players.Remove(this.gameObject);
     }
     public override void sayTruth()
@@ -17,8 +21,10 @@ public class BotController : PlayerBase
         base.sayTruth();
     }
 
-    public void vote()
+    public override void vote()
     {
+        base.vote();
+
         int index = Random.Range(0, players.Count + 1);
         // int index = Random.Range(0, players.Count);
         string option;

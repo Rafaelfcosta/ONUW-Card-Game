@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4973994830550834219}
   - component: {fileID: 4973994830550834216}
+  - component: {fileID: 2013425278}
+  - component: {fileID: 2013425279}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -51,15 +53,47 @@ MonoBehaviour:
   discussionArea: {fileID: 3551404361018962652, guid: 39a9cb4461db6db4d98c98d4f38a0e7a,
     type: 3}
   middleArea: {fileID: 0}
-  cards: []
-  botsCards: []
+  Votation: {fileID: 0}
   playersCardsArea:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  otherPlayersArea: []
-  wolfs: []
-  lonelyWolf: 1
   CURRENT_ROLE: 0
-  CURRENT_STAGE: 0
+--- !u!114 &2013425278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4973994830550834217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeadf15b73345b04ead7c3ee58aba73b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: 21300000, guid: b747165c61b82894d9587e9b95901134, type: 3}
+  - {fileID: 21300000, guid: e154cadb723354f4eaf815341c8e7860, type: 3}
+  - {fileID: 21300000, guid: 366fed50c2f3bcb479cd13f6256c5c22, type: 3}
+  - {fileID: 21300000, guid: 68ff2d139d113304fa502f5a2689270f, type: 3}
+  back: {fileID: 21300000, guid: 0aea4afddff14de43b2cd7b88ba74791, type: 3}
+--- !u!114 &2013425279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4973994830550834217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83e58076d60d56c4db2af1193bda5d5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  middleArea: {fileID: 0}
+  playerCardArea: {fileID: 0}
+  otherPlayersCardArea:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  cardController: {fileID: 2013425278}

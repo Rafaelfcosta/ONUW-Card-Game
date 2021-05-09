@@ -11,9 +11,8 @@ public class VotationController : MonoBehaviour
     public GameObject Results;
     private Text mathDetailsText;
     private Text mathResultText;
-    public GameObject GameController;
     private GameController gameController;
-    private List<GameObject> players;
+    private List<PlayerBase> players;
     public Dictionary<string, int> votes = new Dictionary<string, int>
     {
         { PlayersAreasConstants.player, 0 },
@@ -34,11 +33,10 @@ public class VotationController : MonoBehaviour
         this.skipVotes = skipVotes;
     }
 
-
     void Start()
     {
-        gameController = GameController.GetComponent<GameController>();
-        players = gameController.playersCardsArea;
+        gameController = gameObject.transform.parent.parent.GetComponent<GameController>();
+        players = gameController.getPlayers();
 
         mathDetailsText = Results.transform.GetChild(Results.transform.childCount - 2).GetComponent<Text>();
         mathResultText = Results.transform.GetChild(Results.transform.childCount - 1).GetComponent<Text>();
@@ -218,19 +216,9 @@ public class VotationController : MonoBehaviour
     {
         foreach (var player in players)
         {
-            if (player.name.Equals(playerKey))
+            if (player.gameObject.name.Equals(playerKey))
             {
-                PlayerBase controller;
-                if (player.name.Equals(PlayersAreasConstants.player))
-                {
-                    controller = player.GetComponent<PlayerBase>() as PlayerController;
-                }
-                else
-                {
-                    controller = player.GetComponent<PlayerBase>() as BotController;
-                }
-
-                return controller;
+                return player;
             }
         }
         return null;
@@ -240,23 +228,13 @@ public class VotationController : MonoBehaviour
     {
         foreach (var player in players)
         {
-            PlayerBase controller;
-            if (player.name.Equals(PlayersAreasConstants.player))
+            if (!player.isWerewolf())
             {
-                controller = player.GetComponent<PlayerBase>() as PlayerController;
+                player.won();
             }
             else
             {
-                controller = player.GetComponent<PlayerBase>() as BotController;
-            }
-
-            if (!controller.isWerewolf())
-            {
-                controller.won();
-            }
-            else
-            {
-                controller.lost();
+                player.lost();
             }
         }
 
@@ -267,23 +245,13 @@ public class VotationController : MonoBehaviour
     {
         foreach (var player in players)
         {
-            PlayerBase controller;
-            if (player.name.Equals(PlayersAreasConstants.player))
+            if (player.isWerewolf())
             {
-                controller = player.GetComponent<PlayerBase>() as PlayerController;
+                player.won();
             }
             else
             {
-                controller = player.GetComponent<PlayerBase>() as BotController;
-            }
-
-            if (controller.isWerewolf())
-            {
-                controller.won();
-            }
-            else
-            {
-                controller.lost();
+                player.lost();
             }
         }
 
@@ -294,17 +262,7 @@ public class VotationController : MonoBehaviour
     {
         foreach (var player in players)
         {
-            PlayerBase controller;
-            if (player.name.Equals(PlayersAreasConstants.player))
-            {
-                controller = player.GetComponent<PlayerBase>() as PlayerController;
-            }
-            else
-            {
-                controller = player.GetComponent<PlayerBase>() as BotController;
-            }
-
-            controller.lost();
+            player.lost();
         }
 
         mathResultText.text = "Ninguém ganha";

@@ -44,6 +44,11 @@ public class PlayerController : PlayerBase
         return this.hasRemainingInteractions;
     }
 
+    public override bool isHumanPlayer()
+    {
+        return true;
+    }
+
     public override void sayTruth()
     {
         base.sayTruth();

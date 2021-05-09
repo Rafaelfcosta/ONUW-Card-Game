@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class DrawCards : MonoBehaviour
 {
-    public GameObject middleArea;
+    private GameObject middleArea;
     public GameObject playerCardArea;
     public GameObject[] otherPlayersCardArea;
-    public CardController cardController;
-    List<GameObject> cards = new List<GameObject>();
+    private CardController cardController;
+    List<GameObject> defaultCards = new List<GameObject>();
+    List<GameObject> cards;
 
     void Start()
     {
+        this.middleArea = transform.Find("MiddleArea").gameObject;
         setupCards();
         giveCards();
     }
@@ -19,13 +21,15 @@ public class DrawCards : MonoBehaviour
     public void setupCards()
     {
         cardController = GetComponent<CardController>();
-        cards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));
-        cards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));
-        cards.Add(cardController.createCard(GameController.CharsSequence.Seer));
-        cards.Add(cardController.createCard(GameController.CharsSequence.Robber));
-        cards.Add(cardController.createCard(GameController.CharsSequence.Villager));
-        cards.Add(cardController.createCard(GameController.CharsSequence.Villager));
-        cards.Add(cardController.createCard(GameController.CharsSequence.Villager));
+        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));
+        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));
+        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Seer));
+        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Robber));
+        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Villager));
+        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Villager));
+        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Villager));
+
+        cards = new List<GameObject>(defaultCards);
     }
 
     public void giveCards()

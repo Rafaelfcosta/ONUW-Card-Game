@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5043896895396060267}
   m_Layer: 0
   m_Name: BotCardArea
-  m_TagString: Untagged
+  m_TagString: player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -91,3 +91,4 @@ MonoBehaviour:
   initialCard: {fileID: 0}
   currentCard: {fileID: 0}
   dialogBox: {fileID: 0}
+  players: []
