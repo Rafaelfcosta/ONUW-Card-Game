@@ -192,16 +192,16 @@ public class VotationController : MonoBehaviour
     {
         if (getPlayerByKey(playerKey).isWerewolf())
         {
-            Debug.Log("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " era um lobisomen, vitoria dos aldeoes");
-            mathDetailsText.text = PlayersAreasConstants.playersAreaDictionary[playerKey] + " foi eliminado e era um lobisomen.";
+            Debug.Log("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " era um lobisomem, vitoria dos aldeoes");
+            mathDetailsText.text = PlayersAreasConstants.playersAreaDictionary[playerKey] + " foi eliminado e era um lobisomem.";
             villagersWin();
         }
         else
         {
             if (gameController.isHasWerewolf())
             {
-                Debug.Log("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " não era um lobisomen, vitoria dos lobisomens");
-                mathDetailsText.text = PlayersAreasConstants.playersAreaDictionary[playerKey] + " foi eliminado e não era um lobisomen.";
+                Debug.Log("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " não era um lobisomem, vitoria dos lobisomens");
+                mathDetailsText.text = PlayersAreasConstants.playersAreaDictionary[playerKey] + " foi eliminado e não era um lobisomem.";
                 werewolvesWin();
             }
             else

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IPlayer
 {
+    void receiveCard(GameObject card);
     bool isHumanPlayer();
     GameObject getInitialCard();
     GameObject getCurrentCard();
@@ -19,7 +20,9 @@ public interface IPlayer
     bool isRobber();
     bool isSeer();
     bool startedAsWerewolf();
+    bool startedAsVillager();
     bool startedAsRobber();
+    bool startedAsSeer();
     void won();
     void lost();
 }

@@ -1,59 +1,54 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DrawCards : MonoBehaviour
 {
     private GameObject middleArea;
-    public GameObject playerCardArea;
-    public GameObject[] otherPlayersCardArea;
-    private CardController cardController;
-    List<GameObject> defaultCards = new List<GameObject>();
-    List<GameObject> cards;
+    private CardFactory cardFactory;
+    private List<GameObject> defaultCards = new List<GameObject>();
+    private List<GameObject> cards;
+
+    void Awake()
+    {
+        this.middleArea = transform.Find("MiddleArea").gameObject;
+        createCards();
+        initialize();
+    }
 
     void Start()
     {
-        this.middleArea = transform.Find("MiddleArea").gameObject;
-        setupCards();
-        giveCards();
     }
 
-    public void setupCards()
+    public void createCards()
     {
-        cardController = GetComponent<CardController>();
-        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));
-        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Werewolf));
-        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Seer));
-        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Robber));
-        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Villager));
-        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Villager));
-        defaultCards.Add(cardController.createCard(GameController.CharsSequence.Villager));
-
-        cards = new List<GameObject>(defaultCards);
+        cardFactory = GetComponent<CardFactory>();
+        defaultCards.Add(cardFactory.createCard(GameController.CharsSequence.Werewolf));
+        defaultCards.Add(cardFactory.createCard(GameController.CharsSequence.Werewolf));
+        defaultCards.Add(cardFactory.createCard(GameController.CharsSequence.Seer));
+        defaultCards.Add(cardFactory.createCard(GameController.CharsSequence.Robber));
+        defaultCards.Add(cardFactory.createCard(GameController.CharsSequence.Villager));
+        defaultCards.Add(cardFactory.createCard(GameController.CharsSequence.Villager));
+        defaultCards.Add(cardFactory.createCard(GameController.CharsSequence.Villager));
     }
 
-    public void giveCards()
+    public void initialize()
     {
-        int pos = Random.Range(0, cards.Count);
-        GameObject playerCard = cards[pos];
-        cards.RemoveAt(pos);
+        System.Random rng = new System.Random();
+        cards = new List<GameObject>(defaultCards.OrderBy(a => rng.Next()).ToList());
 
-        playerCard.transform.SetParent(playerCardArea.transform, false);
-
-        foreach (GameObject enemyArea in otherPlayersCardArea)
+        for (int i = 0; i < 3; i++)
         {
-            int i = Random.Range(0, cards.Count);
-            GameObject enemyCard = cards[i];
-            enemyCard.transform.SetParent(enemyArea.transform, false);
+            cards[i].transform.SetParent(middleArea.transform, false);
             cards.RemoveAt(i);
         }
+    }
 
-        foreach (GameObject card in cards)
-        {
-            GameObject middleCard = card;
-            middleCard.transform.SetParent(middleArea.transform, false);
-        }
-
-        cards.RemoveRange(0, cards.Count);
+    public GameObject getCard()
+    {
+        GameObject card = cards[0];
+        cards.RemoveAt(0);
+        return card;
     }
 }

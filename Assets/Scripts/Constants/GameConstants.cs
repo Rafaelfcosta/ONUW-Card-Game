@@ -21,10 +21,10 @@ public static class CharactersNamesConstants
 public static class PlayersAreasConstants
 {
     public const string middle = "MiddleArea";
-    public const string player = "PlayerCardArea";
-    public const string bot1 = "Player2CardArea";
-    public const string bot2 = "Player3CardArea";
-    public const string bot3 = "Player4CardArea";
+    public const string player = "Player1";
+    public const string bot1 = "Player2";
+    public const string bot2 = "Player3";
+    public const string bot3 = "Player4";
     public const string noPlayer = "none";
     public static readonly Dictionary<string, string> playersAreaDictionary = new Dictionary<string, string>
     {

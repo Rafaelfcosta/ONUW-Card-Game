@@ -14,7 +14,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     private Dictionary<string, GameObject> cardsAndPlace = new Dictionary<string, GameObject>();
     public virtual void Start()
     {
-        initializePlayer();
+        // initialize();
     }
 
     // private void FixedUpdate()
@@ -22,11 +22,15 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
 
     // }
 
-    public void initializePlayer()
+    public void receiveCard(GameObject card)
+    {
+        card.transform.SetParent(transform, false);
+        initialize();
+    }
+    public void initialize()
     {
         setInitialCard(transform.GetChild(0).gameObject);
         setCurrentCard(getInitialCard());
-        // Debug.Log(name + " -> " + this.initialCard);
     }
 
     public GameObject getInitialCard()
@@ -156,12 +160,22 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
 
     public bool startedAsWerewolf()
     {
-        return getCardName(getInitialCard()).Equals(CharactersNamesConstants.werewolf);
+        return getInitialCardName().Equals(CharactersNamesConstants.werewolf);
     }
 
     public bool startedAsRobber()
     {
-        return getCardName(getInitialCard()).Equals(CharactersNamesConstants.robber);
+        return getInitialCardName().Equals(CharactersNamesConstants.robber);
+    }
+
+    public bool startedAsVillager()
+    {
+        return getInitialCardName().Equals(CharactersNamesConstants.villager);
+    }
+
+    public bool startedAsSeer()
+    {
+        return getInitialCardName().Equals(CharactersNamesConstants.seer);
     }
 
     public void won()

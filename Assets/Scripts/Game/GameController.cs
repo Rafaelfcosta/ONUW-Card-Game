@@ -19,10 +19,10 @@ public class GameController : MonoBehaviour
     private PlayerController playerController;
     private BotController botController = null;
     private GameObject middleArea;
-    private List<PlayerBase> players;
+    public List<PlayerBase> players;
     private enum GameStage { NIGHT, DAY, VOTING };
     private GameStage CURRENT_STAGE = GameStage.NIGHT;
-    private List<GameObject> cards = new List<GameObject>();
+    private List<CardController> cards = new List<CardController>();
     private List<string> botsCards = new List<string>();
     private List<PlayerBase> otherPlayers = new List<PlayerBase>();
     private List<PlayerBase> wolfs = new List<PlayerBase>();
@@ -30,7 +30,7 @@ public class GameController : MonoBehaviour
     private bool doBotWolfAction = true;
     private bool hasWerewolf = false;
     private bool hasHumanPlayer = false;
-
+    private bool doneSetup = false;
 
     void Start()
     {
@@ -41,7 +41,8 @@ public class GameController : MonoBehaviour
     {
         checkClicked();
         //checkTimer();
-        wakeOrder();
+        if (doneSetup)
+            wakeOrder();
     }
 
     private void wakeOrder()
@@ -56,10 +57,10 @@ public class GameController : MonoBehaviour
             }
 
 
-            if (hasHumanPlayer)
+            if (isHasHumanPlayer())
             {
 
-                if (playerController.getInitialCardName().Equals(CURRENT_ROLE.ToString()) && !playerController.isVillager())
+                if (playerController.getInitialCardName().Equals(CURRENT_ROLE.ToString()) && !playerController.startedAsVillager())
                 {
                     return;
                 }
@@ -98,7 +99,7 @@ public class GameController : MonoBehaviour
             {
                 stageText.text = "Etapa atual: " + "Dia";
 
-                if (hasHumanPlayer)
+                if (isHasHumanPlayer())
                 {
                     hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
                     Instantiate(discussionArea, GameObject.Find("UI").transform, false);
@@ -109,16 +110,16 @@ public class GameController : MonoBehaviour
                 foreach (var player in players)
                 {
 
-                    log(player.gameObject.name + " initial card ->" + player.getInitialCard().name);
-                    log(player.gameObject.name + " current card ->" + player.getCurrentCard().name);
+                    log(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " initial card ->" + player.getInitialCard().name);
+                    log(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " current card ->" + player.getCurrentCard().name);
                     foreach (var card in player.getCardsAndPlace())
                     {
-                        log(player.gameObject.name + " -> " + card.Key + ", " + card.Value.name);
+                        log(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " -> " + card.Key + ", " + card.Value.name);
                     }
                     player.sayTruth();
                 }
 
-                Invoke("nextStage", 1);
+                Invoke("nextStage", 3f);
             }
             else
             {
@@ -126,12 +127,13 @@ public class GameController : MonoBehaviour
                 {
                     stageText.text = "Etapa atual: " + "Votação";
 
-                    if (hasHumanPlayer)
-                    {
-                        middleArea.SetActive(false);
-                        Votation.SetActive(true);
-                    }
-                    
+                    // if (isHasHumanPlayer())
+                    // {
+                    middleArea.SetActive(false);
+                    Votation.SetActive(true);
+                    // }
+
+
                     foreach (var player in players)
                     {
                         if (!player.isHumanPlayer())
@@ -153,6 +155,7 @@ public class GameController : MonoBehaviour
     {
         if (botsCards.Contains(role) || role == CharactersNamesConstants.villager)
         {
+            log("Doing night action for " + role);
             botController = null;
             foreach (var player in players)
             {
@@ -273,10 +276,14 @@ public class GameController : MonoBehaviour
         players = new List<PlayerBase>(gameObject.FindComponentsInChildrenWithTag<PlayerBase>("player"));
         this.middleArea = transform.Find("MiddleArea").gameObject;
 
+        DrawCards drawCards = GetComponent<DrawCards>();
+
         //Check if trigger lonely wolf setup
         int count = 0;
         foreach (PlayerBase player in players)
         {
+            player.receiveCard(drawCards.getCard());
+
             if (!player.isHumanPlayer())
             {
                 botsCards.Add(player.getCurrentCardName());
@@ -299,23 +306,22 @@ public class GameController : MonoBehaviour
                 lonelyWolf = false;
             }
 
-            cards.Add(player.getCurrentCard());
+            cards.Add(player.getCurrentCard().GetComponent<CardController>());
         }
 
         foreach (Transform middleCard in middleArea.transform)
         {
-            cards.Add(middleCard.gameObject);
+            cards.Add(middleCard.gameObject.GetComponent<CardController>());
         }
 
         //Configure player interactable cards
-        if (hasHumanPlayer)
+        if (isHasHumanPlayer())
         {
-            foreach (GameObject card in cards)
+            foreach (var card in cards)
             {
 
                 GameObject area = card.transform.parent.gameObject;
                 string areaName = card.transform.parent.name;
-                CardInteractionController cardInteractionController = card.GetComponent<CardInteractionController>();
 
                 PlayerBase player = card.transform.parent.GetComponentInParent<PlayerBase>();
 
@@ -336,7 +342,7 @@ public class GameController : MonoBehaviour
 
                         if (areaName != PlayersAreasConstants.player)
                         {
-                            cardInteractionController.CanPlayerInteract = true;
+                            card.CanPlayerInteract = true;
                         }
                         break;
                     case "Robber":
@@ -344,7 +350,7 @@ public class GameController : MonoBehaviour
                         playerController.setMaxInteractions(1);
                         if (areaName != PlayersAreasConstants.middle && areaName != PlayersAreasConstants.player)
                         {
-                            cardInteractionController.CanPlayerInteract = true;
+                            card.CanPlayerInteract = true;
                         }
                         break;
                     case "Werewolf":
@@ -356,31 +362,38 @@ public class GameController : MonoBehaviour
                         else
                         {
                             setPlayerCardText("Lobisomem", "Neste momento os lobisomens devem conhecer um ao outro.");
-                            if (playerController.getCardName(card.gameObject).Equals(CharactersNamesConstants.werewolf) && !card.transform.parent.name.Equals(PlayersAreasConstants.middle))
+                            if (card.getCharacter().Equals(CharactersNamesConstants.werewolf) && !card.isInMiddle())
                             {
-                                card.transform.GetChild(0).gameObject.SetActive(true);
-                                card.transform.GetChild(1).gameObject.SetActive(false);
+                                // card.transform.GetChild(0).gameObject.SetActive(true);
+                                // card.transform.GetChild(1).gameObject.SetActive(false);
+                                card.show();
 
                                 string parentName = card.transform.parent.name;
                                 if (!parentName.Equals(PlayersAreasConstants.player))
                                 {
-                                    playerController.addCardAndPlace(parentName, card);
+                                    playerController.addCardAndPlace(parentName, card.gameObject);
                                 }
                             }
                         }
 
                         if (areaName == PlayersAreasConstants.middle)
                         {
-                            cardInteractionController.CanPlayerInteract = true;
+                            card.CanPlayerInteract = true;
                         }
                         break;
                     default:
                         setPlayerCardText("Aldeão", "Como um aldeão, você não possui ações na etapa da noite");
-                        cardInteractionController.CanPlayerInteract = false;
+                        card.CanPlayerInteract = false;
                         break;
                 }
             }
         }
+        else
+        {
+            toggleAllCardsVisible(true);
+        }
+
+        doneSetup = true;
     }
 
     private void setPlayerCardText(string cardName, string hint)
@@ -400,13 +413,20 @@ public class GameController : MonoBehaviour
 
             if (hit.collider != null)
             {
-                GameObject selectedCard = hit.collider.gameObject;
-                if (selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract && playerController.isHasRemainingInteractions())
+                CardController selectedController = hit.collider.GetComponent<CardController>();
+                if (isHasHumanPlayer())
                 {
-                    selectedCard.GetComponent<CardInteractionController>().CanPlayerInteract = false;
-                    StartCoroutine(revealCard(selectedCard.transform, true));
+                    if (selectedController.CanPlayerInteract && playerController.isHasRemainingInteractions())
+                    {
+                        selectedController.CanPlayerInteract = false;
+                        StartCoroutine(revealCard(selectedController.transform, true));
 
-                    checkNightActions(selectedCard);
+                        checkNightActions(selectedController.gameObject);
+                    }
+                }
+                else
+                {
+                    StartCoroutine(revealCard(selectedController.transform, true));
                 }
             }
         }
@@ -433,33 +453,29 @@ public class GameController : MonoBehaviour
 
         if (flag)
         {
-            foreach (GameObject card in cards)
+            foreach (var card in cards)
             {
-                card.transform.GetChild(0).gameObject.SetActive(true);
-                card.transform.GetChild(1).gameObject.SetActive(false);
+                card.show();
             }
         }
         else
         {
-            foreach (GameObject card in cards)
+            foreach (var card in cards)
             {
-                card.transform.GetChild(0).gameObject.SetActive(false);
-                card.transform.GetChild(1).gameObject.SetActive(true);
+                card.hide();
             }
         }
     }
 
-    private void toggleCard(GameObject card, bool flag)
+    private void toggleCard(CardController card, bool flag)
     {
         if (flag)
         {
-            card.transform.GetChild(0).gameObject.SetActive(true);
-            card.transform.GetChild(1).gameObject.SetActive(false);
+            card.show();
         }
         else
         {
-            card.transform.GetChild(0).gameObject.SetActive(false);
-            card.transform.GetChild(1).gameObject.SetActive(true);
+            card.hide();
         }
     }
 
@@ -472,7 +488,7 @@ public class GameController : MonoBehaviour
 
     private void lonelyWolfNightAction(GameObject interactedCard)
     {
-        if (playerController.getCardName(playerController.initialCard).Equals(CharactersNamesConstants.werewolf))
+        if (playerController.startedAsWerewolf())
         {
             playerController.setMaxInteractions(playerController.getMaxInteractions() - 1);
             playerController.addCardAndPlace(interactedCard.transform.parent.name + interactedCard.transform.GetSiblingIndex(), interactedCard);
@@ -481,18 +497,17 @@ public class GameController : MonoBehaviour
 
     private void seerNightAction(GameObject interactedCard)
     {
-        if (playerController.getCardName(playerController.initialCard).Equals(CharactersNamesConstants.seer))
+        CardController cardController = interactedCard.GetComponent<CardController>();
+        if (playerController.startedAsSeer())
         {
-
-            if (interactedCard.transform.parent.name.Equals(PlayersAreasConstants.middle))
+            if (cardController.isInMiddle())
             {
                 playerController.addCardAndPlace(interactedCard.transform.parent.name + interactedCard.transform.GetSiblingIndex(), interactedCard);
-                foreach (GameObject card in cards)
+                foreach (var card in cards)
                 {
-                    string areaName = card.transform.parent.name;
-                    if (areaName != PlayersAreasConstants.middle)
+                    if (!card.isInMiddle())
                     {
-                        card.GetComponent<CardInteractionController>().CanPlayerInteract = false;
+                        card.CanPlayerInteract = false;
                     }
                 }
                 playerController.setMaxInteractions(playerController.getMaxInteractions() - 1);
@@ -508,16 +523,16 @@ public class GameController : MonoBehaviour
 
     private void robberNightAction(GameObject interactedCard)
     {
-        if (playerController.getCardName(playerController.initialCard).Equals(CharactersNamesConstants.robber))
+        if (playerController.startedAsRobber())
         {
             playerController.setMaxInteractions(playerController.getMaxInteractions() - 1);
             playerController.addCardAndPlace(interactedCard.transform.parent.name, interactedCard);
-            playerController.initialCard.transform.GetChild(1).GetComponent<SpriteRenderer>().sortingOrder++;
+            playerController.getInitialCard().transform.GetChild(1).GetComponent<SpriteRenderer>().sortingOrder++;
             interactedCard.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder++;
 
-            StartCoroutine(MoveOverSeconds(playerController.initialCard, interactedCard));
-            StartCoroutine(MoveOverSeconds(interactedCard, playerController.initialCard));
-            swapCards(playerController.initialCard, interactedCard);
+            StartCoroutine(MoveOverSeconds(playerController.getInitialCard(), interactedCard));
+            StartCoroutine(MoveOverSeconds(interactedCard, playerController.getInitialCard()));
+            swapCards(playerController.getInitialCard(), interactedCard);
         }
     }
 
@@ -525,24 +540,29 @@ public class GameController : MonoBehaviour
     {
         Transform tempParent = secondCard.transform.parent;
 
-        if (!isPlayerCard(firstCard))
-        {
-            firstCard.transform.parent.GetComponent<BotController>().setCurrentCard(secondCard);
-        }
-        else
-        {
-            playerController.setCurrentCard(secondCard);
-        }
+        firstCard.transform.parent.GetComponent<PlayerBase>().setCurrentCard(secondCard);
+        tempParent.GetComponent<PlayerBase>().setCurrentCard(firstCard);
+
+        // if (!isPlayerCard(firstCard))
+        // {
+        //     firstCard.transform.parent.GetComponent<BotController>().setCurrentCard(secondCard);
+        // }
+        // else
+        // {
+        //     playerController.setCurrentCard(secondCard);
+        // }
 
 
-        if (!isPlayerCard(secondCard))
-        {
-            tempParent.GetComponent<BotController>().setCurrentCard(firstCard);
-        }
-        else
-        {
-            playerController.setCurrentCard(firstCard);
-        }
+        // if (!isPlayerCard(secondCard))
+        // {
+        //     tempParent.GetComponent<BotController>().setCurrentCard(firstCard);
+        // }
+        // else
+        // {
+        //     playerController.setCurrentCard(firstCard);
+        // }
+
+
 
         secondCard.transform.SetParent(firstCard.transform.parent, false);
         firstCard.transform.SetParent(tempParent, false);
@@ -644,8 +664,8 @@ public class GameController : MonoBehaviour
     private void reDrawCards()
     {
         DrawCards drawCards = GetComponent<DrawCards>();
-        drawCards.setupCards();
-        drawCards.giveCards();
+        drawCards.createCards();
+        // drawCards.giveCards();
     }
 
     public bool isHasWerewolf()
