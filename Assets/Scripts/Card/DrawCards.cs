@@ -10,6 +10,17 @@ public class DrawCards : MonoBehaviour
     private List<GameObject> defaultCards = new List<GameObject>();
     private List<GameObject> cards;
 
+    public List<GameObject> getCards()
+    {
+        return this.cards;
+    }
+
+    public void setCards(List<GameObject> cards)
+    {
+        this.cards = cards;
+    }
+
+
     void Awake()
     {
         this.middleArea = transform.Find("MiddleArea").gameObject;
@@ -36,19 +47,18 @@ public class DrawCards : MonoBehaviour
     public void initialize()
     {
         System.Random rng = new System.Random();
-        cards = new List<GameObject>(defaultCards.OrderBy(a => rng.Next()).ToList());
-
+        setCards(new List<GameObject>(defaultCards.OrderBy(a => rng.Next()).ToList()));
         for (int i = 0; i < 3; i++)
         {
-            cards[i].transform.SetParent(middleArea.transform, false);
-            cards.RemoveAt(i);
+            getCards().ElementAt(i).transform.SetParent(middleArea.transform, false);
+            getCards().RemoveAt(i);
         }
     }
 
     public GameObject getCard()
     {
-        GameObject card = cards[0];
-        cards.RemoveAt(0);
+        GameObject card = getCards().ElementAt(0);
+        getCards().RemoveAt(0);
         return card;
     }
 }

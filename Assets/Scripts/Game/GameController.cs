@@ -119,7 +119,7 @@ public class GameController : MonoBehaviour
                     player.sayTruth();
                 }
 
-                Invoke("nextStage", 3f);
+                Invoke("nextStage", 0.1f);
             }
             else
             {
@@ -266,15 +266,19 @@ public class GameController : MonoBehaviour
 
     private void initialSetup()
     {
-        if (players != null)
-        {
-            players.Clear();
+        // if (players != null)
+        // {
+        //     players.Clear();
 
-        }
+        // }
         cards.Clear();
 
         players = new List<PlayerBase>(gameObject.FindComponentsInChildrenWithTag<PlayerBase>("player"));
-        this.middleArea = transform.Find("MiddleArea").gameObject;
+
+        if (this.middleArea == null)
+        {
+            this.middleArea = transform.Find("MiddleArea").gameObject;
+        }
 
         DrawCards drawCards = GetComponent<DrawCards>();
 
@@ -543,27 +547,6 @@ public class GameController : MonoBehaviour
         firstCard.transform.parent.GetComponent<PlayerBase>().setCurrentCard(secondCard);
         tempParent.GetComponent<PlayerBase>().setCurrentCard(firstCard);
 
-        // if (!isPlayerCard(firstCard))
-        // {
-        //     firstCard.transform.parent.GetComponent<BotController>().setCurrentCard(secondCard);
-        // }
-        // else
-        // {
-        //     playerController.setCurrentCard(secondCard);
-        // }
-
-
-        // if (!isPlayerCard(secondCard))
-        // {
-        //     tempParent.GetComponent<BotController>().setCurrentCard(firstCard);
-        // }
-        // else
-        // {
-        //     playerController.setCurrentCard(firstCard);
-        // }
-
-
-
         secondCard.transform.SetParent(firstCard.transform.parent, false);
         firstCard.transform.SetParent(tempParent, false);
     }
@@ -626,48 +609,6 @@ public class GameController : MonoBehaviour
         objectToMove.transform.position = end;
     }
 
-    private bool isPlayerCard(GameObject card)
-    {
-        if (card.transform.parent.name.Equals(PlayersAreasConstants.player))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private void log(string text)
-    {
-        if (debug)
-            Debug.Log(text);
-    }
-
-    public void restartGame()
-    {
-        removeCards();
-        reDrawCards();
-
-        CURRENT_STAGE = GameStage.NIGHT;
-        CURRENT_ROLE = CharsSequence.Werewolf;
-        initialSetup();
-        startStage(CURRENT_STAGE);
-    }
-
-    private void removeCards()
-    {
-        for (int i = 0; i < middleArea.transform.childCount; i++)
-        {
-            Destroy(middleArea.transform.GetChild(i).gameObject);
-        }
-    }
-
-    private void reDrawCards()
-    {
-        DrawCards drawCards = GetComponent<DrawCards>();
-        drawCards.createCards();
-        // drawCards.giveCards();
-    }
-
     public bool isHasWerewolf()
     {
         return this.hasWerewolf;
@@ -692,5 +633,53 @@ public class GameController : MonoBehaviour
     {
         this.hasHumanPlayer = hasHumanPlayer;
     }
+
+    private void log(string text)
+    {
+        if (debug)
+            Debug.Log(text);
+    }
+
+    public void restartGame()
+    {
+        resetFlags();
+
+        CURRENT_STAGE = GameStage.NIGHT;
+        CURRENT_ROLE = CharsSequence.Werewolf;
+
+        middleArea.SetActive(true);
+        Votation.GetComponent<VotationController>().Results.gameObject.SetActive(false);
+
+        resetPlayers();
+
+        repopulateCardDeck();
+
+        initialSetup();
+    }
+
+    private void repopulateCardDeck()
+    {
+        DrawCards drawCards = GetComponent<DrawCards>();
+        drawCards.initialize();
+    }
+
+    private void resetPlayers()
+    {
+        foreach (var player in players)
+        {
+            player.reset();
+        }
+    }
+
+    private void resetFlags()
+    {
+        lonelyWolf = true;
+        doBotWolfAction = true;
+        hasWerewolf = false;
+        hasHumanPlayer = false;
+        doneSetup = false;
+    }
+
+
 
 }

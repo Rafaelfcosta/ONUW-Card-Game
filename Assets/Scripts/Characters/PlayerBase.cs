@@ -10,8 +10,8 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public GameObject initialCard;
     public GameObject currentCard;
     private bool truthSaid = false;
-    public GameObject dialogBox;
     private Dictionary<string, GameObject> cardsAndPlace = new Dictionary<string, GameObject>();
+    public GameObject dialogBox;
     public virtual void Start()
     {
         // initialize();
@@ -25,6 +25,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public void receiveCard(GameObject card)
     {
         card.transform.SetParent(transform, false);
+        card.transform.SetAsFirstSibling();
         initialize();
     }
     public void initialize()
@@ -240,5 +241,13 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public virtual bool isHumanPlayer()
     {
         return false;
+    }
+
+    public void reset()
+    {
+        getCardsAndPlace().Clear();
+        setInitialCard(null);
+        setCurrentCard(null);
+        setTruthSaid(false);
     }
 }
