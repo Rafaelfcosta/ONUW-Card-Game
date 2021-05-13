@@ -10,6 +10,9 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public GameObject initialCard;
     public GameObject currentCard;
     private bool truthSaid = false;
+    // private bool asked = false;
+    public bool asked = false;
+
     private Dictionary<string, GameObject> cardsAndPlace = new Dictionary<string, GameObject>();
     public GameObject dialogBox;
     public virtual void Start()
@@ -94,8 +97,10 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public virtual void sayTruth()
     {
         setTruthSaid(true);
+        setAsked(false);
+        Text sayTruthText = null;
         dialogBox.SetActive(true);
-        Text sayTruthText = dialogBox.transform.GetChild(0).GetComponent<Text>();
+        sayTruthText = dialogBox.transform.GetChild(0).GetComponent<Text>();
         string text = DiscussionConstants.iStartedAs + CharactersNamesConstants.charsNameDictionary[getCardName(getInitialCard())];
 
         if (getCardsAndPlace().Count > 0)
@@ -132,11 +137,6 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         }
 
         sayTruthText.text = text;
-    }
-
-    public void askPlayer(GameObject player)
-    {
-        throw new System.NotImplementedException();
     }
 
     public bool isWerewolf()
@@ -232,12 +232,6 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         // throw new System.NotImplementedException();
     }
 
-    public void addPlayerStatement()
-    {
-        //receber o acontecimento
-        //o player
-    }
-
     public virtual bool isHumanPlayer()
     {
         return false;
@@ -250,4 +244,33 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         setCurrentCard(null);
         setTruthSaid(false);
     }
+
+    public bool isAsked()
+    {
+        return this.asked;
+    }
+
+    public void setAsked(bool asked)
+    {
+        this.asked = asked;
+    }
+
+    public void addPlayerStatement()
+    {
+        //receber o acontecimento
+        //o player
+    }
+
+    public void askPlayer(PlayerBase player)
+    {
+        player.ask();
+    }
+
+    public void ask()
+    {
+        if (!isAsked())
+            setAsked(true);
+    }
+    public virtual void askRandomPlayer() { }
+
 }

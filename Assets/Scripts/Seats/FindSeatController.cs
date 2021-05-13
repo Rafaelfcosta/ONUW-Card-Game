@@ -4,52 +4,32 @@ using SharpNeat.Phenomes;
 using UnityEngine;
 using UnitySharpNEAT;
 
-public class FindSeatController : UnitController
+public class FindSeatController : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
     {
+        List<Vector3> positions = new List<Vector3>();
+        positions.Add(new Vector3(-871.5f, -419f, 0));
+        positions.Add(new Vector3(-871.5f, 418.5f, 0));
+        positions.Add(new Vector3(871.5f, 418.5f, 0));
+        positions.Add(new Vector3(871.5f, -419f, 0));
+
         TableFillerController tbc = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
-        Transform parent = tbc.getTable();
-        if (parent != null)
+        // Transform parent = tbc.getTable();
+        SeatController table = tbc.getTable();
+        if (table != null)
         {
-            transform.SetParent(parent);
-            name = "Player" + (transform.GetSiblingIndex() + 1);
+            transform.SetParent(table.transform, true);
+            // name = "Player" + (transform.GetSiblingIndex() - 1);
+            name = "Player" + table.getSLOTS();
+            transform.position = positions[table.getSLOTS() - 1];
+            GetComponent<PlayerBase>().dialogBox = transform.parent.gameObject.FindComponentInChildWithTag<Transform>("dialog").gameObject.transform.GetChild(table.getSLOTS() - 1).gameObject;
+
+            if (table.getSLOTS() > 3)
+            {
+                table.GetComponent<GameController>().initialSetup();
+            }
         }
     }
-
-    // public new void FixedUpdate()
-    // {
-
-    // }
-
-    public override float GetFitness()
-    {
-        // throw new System.NotImplementedException();
-        return Random.Range(0, 5);
-    }
-
-    protected override void HandleIsActiveChanged(bool newIsActive)
-    {
-        // throw new System.NotImplementedException();
-        // Debug.Log("trid to change active");
-        gameObject.SetActive(newIsActive);
-    }
-
-    protected override void UpdateBlackBoxInputs(ISignalArray inputSignalArray)
-    {
-        for (int i = 0; i < 90; i++)
-        {
-            inputSignalArray[i] = Random.Range(0, 2);
-        }
-    }
-
-    protected override void UseBlackBoxOutpts(ISignalArray outputSignalArray)
-    {
-        // Debug.Log(outputSignalArray[0]);
-        // Debug.Log(outputSignalArray[1]);
-        // Debug.Log(outputSignalArray[2]);
-        // Debug.Log(outputSignalArray[3]);
-    }
-
 }

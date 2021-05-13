@@ -252,9 +252,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2134939238973146334}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DialogBoxes
-  m_TagString: Untagged
+  m_TagString: dialog
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -287,7 +287,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2134939239108110505}
   - component: {fileID: 2134939239108110510}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Player3DialogBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -370,7 +370,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2134939239603089819}
   - component: {fileID: 2134939239603089818}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Player4DialogBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -534,7 +534,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2134939239986357111}
   - component: {fileID: 2134939239986357108}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Player2DialogBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -617,7 +617,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2134939240187798210}
   - component: {fileID: 2134939240187798221}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: PlayerDialogBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}

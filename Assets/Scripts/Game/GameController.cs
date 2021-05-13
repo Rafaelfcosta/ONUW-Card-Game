@@ -34,7 +34,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        initialSetup();
+        // initialSetup();
     }
 
     void Update()
@@ -117,6 +117,7 @@ public class GameController : MonoBehaviour
                         log(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " -> " + card.Key + ", " + card.Value.name);
                     }
                     player.sayTruth();
+                    // player.askRandomPlayer();
                 }
 
                 Invoke("nextStage", 0.1f);
@@ -264,7 +265,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void initialSetup()
+    public void initialSetup()
     {
         // if (players != null)
         // {

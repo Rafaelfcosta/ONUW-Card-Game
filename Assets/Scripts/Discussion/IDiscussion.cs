@@ -4,6 +4,9 @@ using UnityEngine;
 public interface IDiscussion
 {
     void sayTruth();
-    void askPlayer(GameObject player);
+    void addPlayerStatement();
+    void ask();
+    void askPlayer(PlayerBase player);
+    void askRandomPlayer();
 
 }

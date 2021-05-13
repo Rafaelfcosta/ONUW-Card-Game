@@ -28,13 +28,13 @@ namespace UnitySharpNEAT
         where TGenome : class, IGenome<TGenome>
         where TPhenome : class
     {
-        [SerializeField] 
+        [SerializeField]
         private readonly IGenomeDecoder<TGenome, TPhenome> _genomeDecoder;
 
-        [SerializeField] 
+        [SerializeField]
         private IPhenomeEvaluator<TPhenome> _phenomeEvaluator;
 
-        [SerializeField] 
+        [SerializeField]
         private NeatSupervisor _neatSupervisor;
 
         #region Constructor
@@ -100,10 +100,17 @@ namespace UnitySharpNEAT
                             dict.Add(genome, phenome);
                         }
                     }
-                } 
-           
+                }
+
                 // wait until the next trail, i.e. when the next evaluation should happen
                 yield return new WaitForSeconds(_neatSupervisor.TrialDuration);
+
+                //manter preso nesse loop até o fim das partidas
+                // while (true)
+                // {
+                //     yield return null;
+                //     if (true) break;
+                // }
 
                 // evaluate the fitness of all phenomes (IBlackBox) during this trial duration.
                 foreach (TGenome genome in dict.Keys)
@@ -114,7 +121,7 @@ namespace UnitySharpNEAT
                     {
                         _phenomeEvaluator.Evaluate(phenome);
                         FitnessInfo fitnessInfo = _phenomeEvaluator.GetLastFitness(phenome);
-                        
+
                         fitnessDict[genome][i] = fitnessInfo;
                     }
                 }
@@ -135,11 +142,11 @@ namespace UnitySharpNEAT
                     }
                     var fit = fitness;
                     fitness /= _neatSupervisor.Trials; // Averaged fitness
-                    
+
                     if (fitness > _neatSupervisor.StoppingFitness)
                     {
-                      Utility.Log("Fitness is " + fit + ", stopping now because stopping fitness is " + _neatSupervisor.StoppingFitness);
-                      //  _phenomeEvaluator.StopConditionSatisfied = true;
+                        Utility.Log("Fitness is " + fit + ", stopping now because stopping fitness is " + _neatSupervisor.StoppingFitness);
+                        //  _phenomeEvaluator.StopConditionSatisfied = true;
                     }
                     genome.EvaluationInfo.SetFitness(fitness);
                     genome.EvaluationInfo.AuxFitnessArr = fitnessDict[genome][0]._auxFitnessArr;

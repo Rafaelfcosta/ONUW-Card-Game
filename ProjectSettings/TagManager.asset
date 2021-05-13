@@ -8,6 +8,9 @@ TagManager:
   - Card
   - Car
   - player
+  - middle
+  - dialog
+  - votation
   layers:
   - Default
   - TransparentFX

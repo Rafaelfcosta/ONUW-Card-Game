@@ -143,7 +143,6 @@ namespace UnitySharpNEAT
             else
             {
                 EvolutionAlgorithm.StartContinue();
-
             }
         }
 

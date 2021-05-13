@@ -15,7 +15,6 @@ public interface IPlayer
     Dictionary<string, GameObject> getCardsAndPlace();
     void addCardAndPlace(string key, GameObject card);
     void reset();
-    void addPlayerStatement();
     bool isWerewolf();
     bool isVillager();
     bool isRobber();

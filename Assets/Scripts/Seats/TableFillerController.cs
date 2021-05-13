@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TableFillerController : MonoBehaviour
 {
-    public const int TABLES_AMOUNT = 25;
+    public int TABLES_AMOUNT = 25;
     public GameObject tablePrefab;
     public List<SeatController> tables = new List<SeatController>();
     // Start is called before the first frame update
@@ -15,7 +15,7 @@ public class TableFillerController : MonoBehaviour
         {
             GameObject table = Instantiate(tablePrefab, tablePrefab.transform.position, tablePrefab.transform.rotation);
             table.transform.SetParent(parent);
-            table.name = "BotsTable " + (i + 1);
+            table.name = "Table " + (i + 1);
             tables.Add(table.GetComponent<SeatController>());
         }
     }
@@ -26,15 +26,15 @@ public class TableFillerController : MonoBehaviour
 
     }
 
-    public Transform getTable()
+    public SeatController getTable()
     {
         foreach (var table in tables)
         {
             Debug.Log(table);
             if (table.hasSlots())
             {
-                table.setSLOTS(table.getSLOTS() - 1);
-                return table.gameObject.transform;
+                table.setSLOTS(table.getSLOTS() + 1);
+                return table;
             }
 
         }

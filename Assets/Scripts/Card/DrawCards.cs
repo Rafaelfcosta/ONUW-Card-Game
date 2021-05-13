@@ -23,7 +23,8 @@ public class DrawCards : MonoBehaviour
 
     void Awake()
     {
-        this.middleArea = transform.Find("MiddleArea").gameObject;
+        // this.middleArea = transform.Find("MiddleArea").gameObject;
+        this.middleArea = gameObject.FindComponentInChildWithTag<RectTransform>("middle").gameObject;
         createCards();
         initialize();
     }

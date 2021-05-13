@@ -45,6 +45,6 @@ public class PlayerFactory : MonoBehaviour
         player.transform.SetParent(parent);
         player.name = name;
         player.transform.position = position;
-        player.GetComponent<PlayerBase>().dialogBox = GameObject.Find("DialogBoxes").transform.GetChild(dialogPos).gameObject;
+        // player.GetComponent<PlayerBase>().dialogBox = GameObject.Find("DialogBoxes").transform.GetChild(dialogPos).gameObject;
     }
 }
