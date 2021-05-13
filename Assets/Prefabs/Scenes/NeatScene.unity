@@ -923,5 +923,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: TableFiller
       objectReference: {fileID: 0}
+    - target: {fileID: 7979028840724051493, guid: 2b783a90caa7daa449b3b02ac657197b,
+        type: 3}
+      propertyPath: tablePrefab
+      value: 
+      objectReference: {fileID: 5364938743102661619, guid: ecae5e689b748794387241edab2c90cf,
+        type: 3}
+    - target: {fileID: 7979028840724051493, guid: 2b783a90caa7daa449b3b02ac657197b,
+        type: 3}
+      propertyPath: TABLES_AMOUNT
+      value: 25
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b783a90caa7daa449b3b02ac657197b, type: 3}

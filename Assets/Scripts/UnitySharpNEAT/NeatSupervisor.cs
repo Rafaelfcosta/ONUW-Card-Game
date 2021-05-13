@@ -248,9 +248,11 @@ namespace UnitySharpNEAT
             UnitController controller = Instantiate(_unitControllerPrefab, _unitControllerPrefab.transform.position, _unitControllerPrefab.transform.rotation);
 
             if (_spawnParent != null)
-                controller.transform.parent = _spawnParent;
+                // controller.transform.parent = _spawnParent;
+                controller.transform.SetParent(_spawnParent);
             else
-                controller.transform.parent = this.transform;
+                // controller.transform.parent = this.transform;
+                controller.transform.SetParent(this.transform);
 
             _blackBoxMap.Add(box, controller);
             return controller;

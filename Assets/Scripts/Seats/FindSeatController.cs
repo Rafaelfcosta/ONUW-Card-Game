@@ -20,7 +20,7 @@ public class FindSeatController : MonoBehaviour
         SeatController table = tbc.getTable();
         if (table != null)
         {
-            transform.SetParent(table.transform, true);
+            transform.SetParent(table.transform);
             // name = "Player" + (transform.GetSiblingIndex() - 1);
             name = "Player" + table.getSLOTS();
             transform.position = positions[table.getSLOTS() - 1];

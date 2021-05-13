@@ -30,7 +30,6 @@ public class TableFillerController : MonoBehaviour
     {
         foreach (var table in tables)
         {
-            Debug.Log(table);
             if (table.hasSlots())
             {
                 table.setSLOTS(table.getSLOTS() + 1);
