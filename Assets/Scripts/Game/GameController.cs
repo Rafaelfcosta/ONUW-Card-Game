@@ -35,7 +35,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        // initialSetup();
+
     }
 
     void Update()
@@ -49,7 +49,8 @@ public class GameController : MonoBehaviour
 
         if (ended && transform.childCount == 2)
         {
-            gameObject.SetActive(false);
+            // gameObject.SetActive(false);
+            Destroy(gameObject);
         }
     }
 
@@ -118,11 +119,11 @@ public class GameController : MonoBehaviour
                 foreach (var player in players)
                 {
 
-                    printLog(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " initial card ->" + player.getInitialCard().name);
-                    printLog(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " current card ->" + player.getCurrentCard().name);
+                    printLog(PlayersAreasConstants.playersAreaDictionary[player.name] + " initial card ->" + player.getInitialCard().name);
+                    printLog(PlayersAreasConstants.playersAreaDictionary[player.name] + " current card ->" + player.getCurrentCard().name);
                     foreach (var card in player.getCardsAndPlace())
                     {
-                        printLog(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " -> " + card.Key + ", " + card.Value.name);
+                        printLog(PlayersAreasConstants.playersAreaDictionary[player.name] + " -> " + card.Key + ", " + card.Value.name);
                     }
                     player.sayTruth();
                     // player.askRandomPlayer();
@@ -136,13 +137,12 @@ public class GameController : MonoBehaviour
                 {
                     stageText.text = "Etapa atual: " + "Votação";
 
-                    // if (isHasHumanPlayer())
-                    // {
-                        
-                    // middleArea.SetActive(false);
-                    Votation.SetActive(true);
-                    // }
+                    if (isHasHumanPlayer())
+                    {
+                        middleArea.SetActive(false);
+                    }
 
+                    Votation.SetActive(true);
 
                     foreach (var player in players)
                     {
@@ -185,7 +185,7 @@ public class GameController : MonoBehaviour
                 {
                     foreach (var player in players)
                     {
-                        if (!player.gameObject.name.Equals(botController.gameObject.name))
+                        if (!player.name.Equals(botController.name))
                         {
                             otherPlayers.Add(player);
                         }
@@ -255,9 +255,9 @@ public class GameController : MonoBehaviour
                             {
                                 foreach (var otherWolf in wolfs)
                                 {
-                                    if (otherWolf.gameObject.name != wolf.gameObject.name)
+                                    if (otherWolf.name != wolf.name)
                                     {
-                                        wolf.addCardAndPlace(otherWolf.gameObject.name, otherWolf.getInitialCard());
+                                        wolf.addCardAndPlace(otherWolf.name, otherWolf.getInitialCard());
                                     }
                                 }
                             }
@@ -656,5 +656,12 @@ public class GameController : MonoBehaviour
         TableFillerController tableFillerController = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
         tableFillerController.realocatePlayers(players);
         ended = true;
+    }
+
+    public void newMatch()
+    {
+        TableFillerController tableFillerController = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
+        tableFillerController.addTable();
+        tableFillerController.realocatePlayers(players);
     }
 }

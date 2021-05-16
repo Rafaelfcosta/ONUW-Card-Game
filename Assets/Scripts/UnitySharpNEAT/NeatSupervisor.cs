@@ -111,6 +111,8 @@ namespace UnitySharpNEAT
             Experiment.Initialize(xmlConfig.DocumentElement, this, _networkInputCount, _networkOutputCount);
 
             ExperimentIO.DebugPrintSavePaths(Experiment);
+
+            StartEvolution();
         }
         #endregion
 

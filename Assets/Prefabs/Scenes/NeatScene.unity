@@ -255,7 +255,7 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 4
   m_StartCorner: 0
-  m_StartAxis: 1
+  m_StartAxis: 0
   m_CellSize: {x: 1920, y: 1080}
   m_Spacing: {x: 50, y: 50}
   m_Constraint: 1
@@ -668,6 +668,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1123813793820403514, guid: db60c20ca1c66df4f82066561a1adb45,
+        type: 3}
+      propertyPath: _initialTimeScale
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db60c20ca1c66df4f82066561a1adb45, type: 3}
