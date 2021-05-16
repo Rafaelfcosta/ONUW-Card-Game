@@ -39,4 +39,12 @@ public class TableFillerController : MonoBehaviour
         }
         return null;
     }
+
+    public void realocatePlayers(List<PlayerBase> players)
+    {
+        foreach (var player in players)
+        {
+            player.GetComponent<FindSeatController>().seat(getTable());
+        }
+    }
 }

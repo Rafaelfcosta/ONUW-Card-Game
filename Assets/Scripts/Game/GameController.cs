@@ -31,6 +31,7 @@ public class GameController : MonoBehaviour
     private bool hasWerewolf = false;
     private bool hasHumanPlayer = false;
     private bool doneSetup = false;
+    private bool ended = false;
 
     void Start()
     {
@@ -42,7 +43,14 @@ public class GameController : MonoBehaviour
         checkClicked();
         //checkTimer();
         if (doneSetup)
+        {
             wakeOrder();
+        }
+
+        if (ended && transform.childCount == 2)
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     private void wakeOrder()
@@ -106,15 +114,15 @@ public class GameController : MonoBehaviour
                 }
 
 
-                log("-----------SUMMARY----------");
+                printLog("-----------SUMMARY----------");
                 foreach (var player in players)
                 {
 
-                    log(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " initial card ->" + player.getInitialCard().name);
-                    log(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " current card ->" + player.getCurrentCard().name);
+                    printLog(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " initial card ->" + player.getInitialCard().name);
+                    printLog(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " current card ->" + player.getCurrentCard().name);
                     foreach (var card in player.getCardsAndPlace())
                     {
-                        log(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " -> " + card.Key + ", " + card.Value.name);
+                        printLog(PlayersAreasConstants.playersAreaDictionary[player.gameObject.name] + " -> " + card.Key + ", " + card.Value.name);
                     }
                     player.sayTruth();
                     // player.askRandomPlayer();
@@ -130,7 +138,8 @@ public class GameController : MonoBehaviour
 
                     // if (isHasHumanPlayer())
                     // {
-                    middleArea.SetActive(false);
+                        
+                    // middleArea.SetActive(false);
                     Votation.SetActive(true);
                     // }
 
@@ -156,7 +165,7 @@ public class GameController : MonoBehaviour
     {
         if (botsCards.Contains(role) || role == CharactersNamesConstants.villager)
         {
-            log("Doing night action for " + role);
+            printLog("Doing night action for " + role);
             botController = null;
             foreach (var player in players)
             {
@@ -287,6 +296,7 @@ public class GameController : MonoBehaviour
         int count = 0;
         foreach (PlayerBase player in players)
         {
+            player.initialize();
             player.receiveCard(drawCards.getCard());
 
             if (!player.isHumanPlayer())
@@ -635,52 +645,16 @@ public class GameController : MonoBehaviour
         this.hasHumanPlayer = hasHumanPlayer;
     }
 
-    private void log(string text)
+    private void printLog(string text)
     {
         if (debug)
             Debug.Log(text);
     }
 
-    public void restartGame()
+    public void matchEnded()
     {
-        resetFlags();
-
-        CURRENT_STAGE = GameStage.NIGHT;
-        CURRENT_ROLE = CharsSequence.Werewolf;
-
-        middleArea.SetActive(true);
-        Votation.GetComponent<VotationController>().Results.gameObject.SetActive(false);
-
-        resetPlayers();
-
-        repopulateCardDeck();
-
-        initialSetup();
+        TableFillerController tableFillerController = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
+        tableFillerController.realocatePlayers(players);
+        ended = true;
     }
-
-    private void repopulateCardDeck()
-    {
-        DrawCards drawCards = GetComponent<DrawCards>();
-        drawCards.initialize();
-    }
-
-    private void resetPlayers()
-    {
-        foreach (var player in players)
-        {
-            player.reset();
-        }
-    }
-
-    private void resetFlags()
-    {
-        lonelyWolf = true;
-        doBotWolfAction = true;
-        hasWerewolf = false;
-        hasHumanPlayer = false;
-        doneSetup = false;
-    }
-
-
-
 }

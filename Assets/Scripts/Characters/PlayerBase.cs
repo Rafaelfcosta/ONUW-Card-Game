@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using SharpNeat.Phenomes;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,14 +11,14 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public GameObject initialCard;
     public GameObject currentCard;
     private bool truthSaid = false;
-    // private bool asked = false;
-    public bool asked = false;
-
+    private bool asked = false;
+    public List<PlayerBase> players;
     private Dictionary<string, GameObject> cardsAndPlace = new Dictionary<string, GameObject>();
     public GameObject dialogBox;
+    private NeuralNetworkRecords records = new NeuralNetworkRecords();
     public virtual void Start()
     {
-        // initialize();
+
     }
 
     // private void FixedUpdate()
@@ -29,12 +30,12 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     {
         card.transform.SetParent(transform, false);
         card.transform.SetAsFirstSibling();
-        initialize();
-    }
-    public void initialize()
-    {
         setInitialCard(transform.GetChild(0).gameObject);
         setCurrentCard(getInitialCard());
+    }
+    public virtual void initialize()
+    {
+        reset();
     }
 
     public GameObject getInitialCard()
@@ -181,12 +182,12 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
 
     public void won()
     {
-        Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " ganhou");
+        // Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " ganhou");
     }
 
     public void lost()
     {
-        Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " perdeu");
+        // Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " perdeu");
     }
     public virtual void vote()
     {
@@ -239,10 +240,17 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
 
     public void reset()
     {
-        getCardsAndPlace().Clear();
         setInitialCard(null);
         setCurrentCard(null);
         setTruthSaid(false);
+        setAsked(false);
+        getCardsAndPlace().Clear();
+        getRecords().Clear();
+        players.Clear();
+        if (transform.childCount > 0)
+        {
+            Destroy(transform.GetChild(0).gameObject);
+        }
     }
 
     public bool isAsked()
@@ -273,4 +281,8 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     }
     public virtual void askRandomPlayer() { }
 
+    public Dictionary<string, OrderedDictionary> getRecords()
+    {
+        return this.records.records;
+    }
 }

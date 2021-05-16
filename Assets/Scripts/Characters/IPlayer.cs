@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 
 public interface IPlayer
@@ -25,4 +26,5 @@ public interface IPlayer
     bool startedAsSeer();
     void won();
     void lost();
+    Dictionary<string, OrderedDictionary> getRecords();
 }

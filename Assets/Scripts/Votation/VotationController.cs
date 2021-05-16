@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class VotationController : MonoBehaviour
 {
     public GameObject voteBtn;
-    public GameObject middleArea;
     public GameObject Results;
     private Text mathDetailsText;
     private Text mathResultText;
@@ -273,5 +272,6 @@ public class VotationController : MonoBehaviour
         transform.gameObject.SetActive(false);
         // middleArea.SetActive(true);
         Results.SetActive(true);
+        gameController.matchEnded();
     }
 }
