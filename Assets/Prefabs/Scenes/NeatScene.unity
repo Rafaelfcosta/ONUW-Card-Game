@@ -300,22 +300,22 @@ PrefabInstance:
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
       propertyPath: TrialDuration
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
       propertyPath: StoppingFitness
-      value: 50
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
       propertyPath: _networkInputCount
-      value: 90
+      value: 94
       objectReference: {fileID: 0}
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
       propertyPath: _enableDebugLogging
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
@@ -942,6 +942,21 @@ PrefabInstance:
     - target: {fileID: 7979028840724051493, guid: 2b783a90caa7daa449b3b02ac657197b,
         type: 3}
       propertyPath: TABLES_AMOUNT
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7979028840724051493, guid: 2b783a90caa7daa449b3b02ac657197b,
+        type: 3}
+      propertyPath: minTableAmount
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7979028840724051493, guid: 2b783a90caa7daa449b3b02ac657197b,
+        type: 3}
+      propertyPath: ADD_TABLES_AMOUNT
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7979028840724051493, guid: 2b783a90caa7daa449b3b02ac657197b,
+        type: 3}
+      propertyPath: TABLES_START_AMOUNT
       value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
