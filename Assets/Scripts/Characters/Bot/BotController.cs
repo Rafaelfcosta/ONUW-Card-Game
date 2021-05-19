@@ -9,38 +9,116 @@ public class BotController : PlayerBase
     public override void initialize()
     {
         base.initialize();
-        players = new List<PlayerBase>(transform.parent.gameObject.FindComponentsInChildrenWithTag<PlayerBase>("player"));
-        this.players.Remove(this);
-
         createReacords();
-
-        // foreach (var record in getRecords())
-        // {
-        //     foreach (var value in record.Value.Values)
-        //     {
-        //         Debug.Log(record.Key + " " + value);
-        //     }
-        // }
     }
 
     public void createReacords()
     {
-
         foreach (var player in players)
         {
             OrderedDictionary afirmations = new OrderedDictionary();
-            for (int i = 0; i < 10; i++)
+            afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.aldeao, 0);
+
+            foreach (var p in PlayersAreasConstants.playersAreaDictionary.Values)
             {
-                afirmations.Add("test" + i, i);
+                if (p != "Nenhum")
+                {
+                    foreach (var role in CharactersNamesConstants.charsNameDictionary.Values)
+                    {
+                        if (role != CharactersNamesConstants.vidente)
+                        {
+                            afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtPlayer +
+                                        p + DiscussionConstants.andItWas + role, 0);
+                        }
+
+                        if (role.Equals(CharactersNamesConstants.vidente) || role.Equals(CharactersNamesConstants.aldeao))
+                        {
+                            afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.ladrao + "\n" + DiscussionConstants.switchedCardWith +
+                                        p + DiscussionConstants.andItWas + role, 0);
+                        }
+                    }
+                }
             }
+            afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtMiddleAndSaw +
+                            DiscussionConstants.a + CharactersNamesConstants.aldeao, 0);
+            afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtMiddleAndSaw +
+                            DiscussionConstants.two + CharactersNamesConstants.charsNamePluralDictionary[CharactersNamesConstants.villager], 0);
+
+            afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtMiddleAndSaw +
+                            DiscussionConstants.a + CharactersNamesConstants.ladrao, 0);
+
+            afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtMiddleAndSaw +
+                            DiscussionConstants.a + CharactersNamesConstants.lobisomem, 0);
+            afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtMiddleAndSaw +
+                            DiscussionConstants.two + CharactersNamesConstants.charsNamePluralDictionary[CharactersNamesConstants.werewolf], 0);
+
+            // foreach (var p in PlayersAreasConstants.playersAreaDictionary.Values)
+            // {
+            //     if (p != "Nenhum")
+            //     {
+            //         foreach (var role in CharactersNamesConstants.charsNameDictionary.Values)
+            //         {
+            //             if (role.Equals(CharactersNamesConstants.vidente) || role.Equals(CharactersNamesConstants.aldeao))
+            //             {
+            //                 afirmations.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.ladrao + "\n" + DiscussionConstants.switchedCardWith +
+            //                             p + DiscussionConstants.andItWas + role, 0);
+            //             }
+            //         }
+            //     }
+            // }
 
             getRecords().Add(player.name, afirmations);
+        }
+
+        foreach (var role in CharactersNamesConstants.charsNameDictionary.Values)
+        {
+            getMyRecords().Add("Sou um " + role, 0);
+        }
+
+        foreach (var p in PlayersAreasConstants.playersAreaDictionary.Values)
+        {
+            if (p != "Nenhum" && p != PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player])
+            {
+                foreach (var role in CharactersNamesConstants.charsNameDictionary.Values)
+                {
+                    getMyRecords().Add(p + " é um(a) " + role, 0);
+                }
+            }
+        }
+
+        // Debug.Log(getMyRecords().Keys.Count);
+
+        // foreach (var key in getMyRecords().Keys)
+        // {
+        //     Debug.Log(key);
+        // }
+
+        // foreach (var record in getRecords())
+        // {
+        //     Debug.Log(name + " -> " + record.Key + " " + record.Value.Count);
+        // }
+    }
+
+    public override void say()
+    {
+        if (isWerewolf())
+        {
+            bluff();
+        }
+        else
+        {
+            sayTruth();
         }
     }
 
     public override void sayTruth()
     {
         base.sayTruth();
+    }
+
+    public override void bluff()
+    {
+
     }
 
     public override void askRandomPlayer()
@@ -53,9 +131,13 @@ public class BotController : PlayerBase
     public override void vote()
     {
         base.vote();
+        int index = getVoteOption();
 
-        int index = Random.Range(0, players.Count + 1);
-        // int index = Random.Range(0, players.Count);
+        if (index == -1)
+        {
+            index = Random.Range(0, players.Count + 1);
+        }
+        
         string option;
         if (index < players.Count)
         {
@@ -65,9 +147,10 @@ public class BotController : PlayerBase
         {
             option = "none";
         }
-        // GameObject.Find("Votation").GetComponent<VotationController>().addVoteToPlayer(option);
         VotationController votationController = transform.parent.Find("UI").gameObject.FindComponentInChildWithTag<VotationController>("votation");
         votationController.addVoteToPlayer(option);
         // Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " voted for -> " + PlayersAreasConstants.playersAreaDictionary[option]);
+        setVoted(true);
     }
 }
+

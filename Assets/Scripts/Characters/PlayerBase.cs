@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -16,15 +17,19 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     private Dictionary<string, GameObject> cardsAndPlace = new Dictionary<string, GameObject>();
     public GameObject dialogBox;
     private NeuralNetworkRecords records = new NeuralNetworkRecords();
+    private bool winner = false;
+    private bool voted = false;
+    private int voteOption = -1;
+
     public virtual void Start()
     {
 
     }
 
-    // private void FixedUpdate()
-    // {
+    public override void FixedUpdate()
+    {
 
-    // }
+    }
 
     public void receiveCard(GameObject card)
     {
@@ -32,10 +37,40 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         card.transform.SetAsFirstSibling();
         setInitialCard(transform.GetChild(0).gameObject);
         setCurrentCard(getInitialCard());
+
+        getMyRecords()["Sou um " + CharactersNamesConstants.charsNameDictionary[getInitialCardName()]] = 1;
+
+        // foreach (var key in getMyRecords().Keys)
+        // {
+        //     Debug.Log(key + " = " + getMyRecords()[key]);
+        // }
     }
+
     public virtual void initialize()
     {
         reset();
+        players = new List<PlayerBase>(transform.parent.gameObject.FindComponentsInChildrenWithTag<PlayerBase>("player"));
+        this.players.Remove(this);
+    }
+
+    public void reset()
+    {
+        setInitialCard(null);
+        setCurrentCard(null);
+        this.winner = false;
+        setVoted(false);
+        setTruthSaid(false);
+        setAsked(false);
+        getCardsAndPlace().Clear();
+        getRecords().Clear();
+        players.Clear();
+        getMyRecords().Clear();
+        setVoteOption(-1);
+
+        if (transform.childCount > 0)
+        {
+            Destroy(transform.GetChild(0).gameObject);
+        }
     }
 
     public GameObject getInitialCard()
@@ -94,6 +129,17 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     {
         this.truthSaid = truthSaid;
     }
+    public virtual void say()
+    {
+        if (isWerewolf())
+        {
+            bluff();
+        }
+        else
+        {
+            sayTruth();
+        }
+    }
 
     public virtual void sayTruth()
     {
@@ -102,27 +148,33 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         Text sayTruthText = null;
         dialogBox.SetActive(true);
         sayTruthText = dialogBox.transform.GetChild(0).GetComponent<Text>();
-        string text = DiscussionConstants.iStartedAs + CharactersNamesConstants.charsNameDictionary[getCardName(getInitialCard())];
+        string text = DiscussionConstants.iStartedAs + CharactersNamesConstants.charsNameDictionary[getInitialCardName()];
 
         if (getCardsAndPlace().Count > 0)
         {
             int count = 0;
+            List<string> middleCards = new List<string>();
             foreach (var card in getCardsAndPlace())
             {
                 if (card.Key.StartsWith(PlayersAreasConstants.middle))
                 {
                     if (count.Equals(0))
                     {
-                        text += "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a + CharactersNamesConstants.charsNameDictionary[getCardName(card.Value)];
+                        // string mc = getCardName(card.Value);
+                        // text += "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a + CharactersNamesConstants.charsNameDictionary[mc];
+                        middleCards.Add(getCardName(card.Value));
                     }
                     else
                     {
-                        text += DiscussionConstants.andA + CharactersNamesConstants.charsNameDictionary[getCardName(card.Value)];
+                        // string mc = getCardName(card.Value);
+                        // text += DiscussionConstants.andA + CharactersNamesConstants.charsNameDictionary[mc];
+                        middleCards.Add(getCardName(card.Value));
                     }
                 }
                 else
                 {
-                    if (getCardName(getInitialCard()).Equals(CharactersNamesConstants.robber))
+                    // if (getCardName(getInitialCard()).Equals(CharactersNamesConstants.robber))
+                    if (startedAsRobber())
                     {
                         text += "\n" + DiscussionConstants.switchedCardWith + PlayersAreasConstants.playersAreaDictionary[card.Key];
                     }
@@ -135,10 +187,46 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
                 }
                 count++;
             }
+
+            if (middleCards.Count > 0)
+            {
+                if (middleCards.Count == 2)
+                {
+                    if (middleCards[0].Equals(middleCards[1]))
+                    {
+                        text += "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.two + CharactersNamesConstants.charsNamePluralDictionary[middleCards[0]];
+                        addPlayerStatement(text);
+                    }
+                    else
+                    {
+                        string tempText = text;
+
+                        text += "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a + CharactersNamesConstants.charsNameDictionary[middleCards[0]];
+                        addPlayerStatement(text);
+                        tempText += "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a + CharactersNamesConstants.charsNameDictionary[middleCards[1]];
+                        addPlayerStatement(tempText);
+                        text += DiscussionConstants.andA + CharactersNamesConstants.charsNameDictionary[middleCards[1]];
+                    }
+                }
+                else
+                {
+                    text += "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a + CharactersNamesConstants.charsNameDictionary[middleCards[0]];
+                    addPlayerStatement(text);
+                }
+            }
+            else
+            {
+                addPlayerStatement(text);
+            }
+        }
+        else
+        {
+            addPlayerStatement(text);
         }
 
         sayTruthText.text = text;
     }
+    public virtual void bluff() { }
 
     public bool isWerewolf()
     {
@@ -180,77 +268,126 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         return getInitialCardName().Equals(CharactersNamesConstants.seer);
     }
 
-    public void won()
+    public bool isOnVillagerTeam()
     {
-        // Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " ganhou");
+        return isVillager() || isSeer() || isRobber();
     }
 
-    public void lost()
+    public bool isWinner()
     {
-        // Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " perdeu");
+        // Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " ganhou");
+        return this.winner;
     }
+    public void win()
+    {
+        this.winner = true;
+    }
+
     public virtual void vote()
     {
-        // UpdateBlackBoxInputs(BlackBox.InputSignalArray);
-        // BlackBox.Activate();
-        // UseBlackBoxOutpts(BlackBox.OutputSignalArray);
+        if (IsActive)
+        {
+            UpdateBlackBoxInputs(BlackBox.InputSignalArray);
+            BlackBox.Activate();
+            UseBlackBoxOutpts(BlackBox.OutputSignalArray);
+        }
     }
 
     protected override void UpdateBlackBoxInputs(ISignalArray inputSignalArray)
     {
-        // inputSignalArray[0] = 0;
-        // inputSignalArray[1] = 0;
-        // inputSignalArray[3] = 1;
-        // for (int i = 0; i < 90; i++)
-        // {
-        //     if (i % 2 == 0)
-        //     {
-        //         inputSignalArray[i] = 0;
-        //     }
-        //     else
-        //     {
-        //         inputSignalArray[i] = 1;
-        //     }
-        // }
+        int count = 0;
+        foreach (var player in getRecords().Keys)
+        {
+            foreach (var input in getRecords()[player].Keys)
+            {
+                inputSignalArray[count] = (int)getRecords()[player][input];
+                count++;
+            }
+        }
+
+        foreach (var sureItem in getMyRecords().Keys)
+        {
+            inputSignalArray[count] = (int)getMyRecords()[sureItem];
+            count++;
+        }
     }
 
     protected override void UseBlackBoxOutpts(ISignalArray outputSignalArray)
     {
-        // Debug.Log(outputSignalArray[0]);
-        // Debug.Log(outputSignalArray[1]);
-        // Debug.Log(outputSignalArray[2]);
-        // Debug.Log(outputSignalArray[3]);
+        List<double> values = new List<double>();
+
+        for (int i = 0; i < outputSignalArray.Length; i++)
+        {
+            double val = System.Math.Round(outputSignalArray[i], 5, System.MidpointRounding.AwayFromZero);
+            values.Add(val);
+        }
+
+        double max = values.Max();
+        Debug.Log("Vote = " + values.IndexOf(max));
+        setVoteOption(values.IndexOf(max));
     }
 
     public override float GetFitness()
     {
-        // return UnityEngine.Random.Range(0, 11);
-        return 0;
+        int fitness = 0;
+        if (isVoted())
+        {
+            if (isWinner())
+            {
+                fitness += 10;
+            }
+
+            if (getVoteOption() < players.Count)
+            {
+                if (isOnVillagerTeam())
+                {
+                    if (players[getVoteOption()].isWerewolf())
+                    {
+                        fitness += 2;
+                    }
+                }
+                else
+                {
+                    if (players[getVoteOption()].isOnVillagerTeam())
+                    {
+                        fitness += 2;
+                    }
+                }
+            }
+            else
+            {
+                bool flag = false;
+                foreach (var player in players)
+                {
+                    if (player.isWerewolf())
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag)
+                {
+                    if (fitness > 0)
+                        fitness -= 1;
+                }
+            }
+        }
+        return fitness * 0.2f;
     }
 
     protected override void HandleIsActiveChanged(bool newIsActive)
     {
-        // throw new System.NotImplementedException();
+        if (newIsActive)
+        {
+            FindSeatController findSeatController = GetComponent<FindSeatController>();
+            findSeatController.setTbc(GameObject.Find("TableFiller").GetComponent<TableFillerController>());
+            findSeatController.seat(findSeatController.getTbc().getTable());
+        }
     }
 
     public virtual bool isHumanPlayer()
     {
         return false;
-    }
-
-    public void reset()
-    {
-        setInitialCard(null);
-        setCurrentCard(null);
-        setTruthSaid(false);
-        setAsked(false);
-        getCardsAndPlace().Clear();
-        getRecords().Clear();
-        players.Clear();
-        if (transform.childCount > 0)
-        {
-            Destroy(transform.GetChild(0).gameObject);
-        }
     }
 
     public bool isAsked()
@@ -263,10 +400,24 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         this.asked = asked;
     }
 
-    public void addPlayerStatement()
+    public void addPlayerStatement(string text)
     {
-        //receber o acontecimento
-        //o player
+        foreach (var player in players)
+        {
+            if (!player.isHumanPlayer())
+            {
+
+                OrderedDictionary afirmations = player.getRecords()[name];
+
+                if (afirmations.Contains(text))
+                {
+                    afirmations[text] = 1;
+                    // Debug.Log(name + " -> " + player.name + " " + text + " = " + player.getRecords()[name][text]);
+                }
+            }
+        }
+
+
     }
 
     public void askPlayer(PlayerBase player)
@@ -284,5 +435,30 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public Dictionary<string, OrderedDictionary> getRecords()
     {
         return this.records.records;
+    }
+
+    public OrderedDictionary getMyRecords()
+    {
+        return this.records.myRecords;
+    }
+
+    public bool isVoted()
+    {
+        return this.voted;
+    }
+
+    public void setVoted(bool voted)
+    {
+        this.voted = voted;
+    }
+
+    public int getVoteOption()
+    {
+        return this.voteOption;
+    }
+
+    public void setVoteOption(int voteOption)
+    {
+        this.voteOption = voteOption;
     }
 }
