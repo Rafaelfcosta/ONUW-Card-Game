@@ -6,17 +6,21 @@ using UnitySharpNEAT;
 
 public class FindSeatController : MonoBehaviour
 {
-    private List<Vector3> positions = new List<Vector3>();
+    // private List<Vector3> positions = new List<Vector3>();
+    private static List<Vector3> positions = new List<Vector3>(new Vector3[] {
+        new Vector3(-871.5f, -419f, 0),
+        new Vector3(-871.5f, 418.5f, 0),
+        new Vector3(871.5f, 418.5f, 0),
+        new Vector3(871.5f, -419f, 0)
+    });
+    private TableFillerController tbc;
+
     void Start()
     {
-        positions.Add(new Vector3(-871.5f, -419f, 0));
-        positions.Add(new Vector3(-871.5f, 418.5f, 0));
-        positions.Add(new Vector3(871.5f, 418.5f, 0));
-        positions.Add(new Vector3(871.5f, -419f, 0));
-
-        TableFillerController tbc = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
-        SeatController table = tbc.getTable();
-        seat(table);
+        // tbc = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
+        // setTbc(GameObject.Find("TableFiller").GetComponent<TableFillerController>());
+        // SeatController table = tbc.getTable();
+        // seat(table);
     }
 
     public void seat(SeatController table)
@@ -33,9 +37,15 @@ public class FindSeatController : MonoBehaviour
                 table.GetComponent<GameController>().initialSetup();
             }
         }
-        // else
-        // {
-        //     transform.SetParent(null);
-        // }
+    }
+
+    public TableFillerController getTbc()
+    {
+        return this.tbc;
+    }
+
+    public void setTbc(TableFillerController tbc)
+    {
+        this.tbc = tbc;
     }
 }

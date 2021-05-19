@@ -128,7 +128,7 @@ public class VotationController : MonoBehaviour
                     var maxValue = votes.Values.Max();
                     var playerKey = votes.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
 
-                    // Debug.Log("Most voted -> " + PlayersAreasConstants.playersAreaDictionary[playerKey] + " with " + maxValue);
+                    // gameController.printLog("Most voted -> " + PlayersAreasConstants.playersAreaDictionary[playerKey] + " with " + maxValue);
                     eliminatePlayer(playerKey);
                 }
                 else if (orderedVotes.ElementAt(lastPos).Value.Equals(2) && orderedVotes.ElementAt(lastPos - 1).Value.Equals(2))
@@ -149,13 +149,13 @@ public class VotationController : MonoBehaviour
     {
         if (!gameController.isHasWerewolf())
         {
-            // Debug.Log("Sem lobisomem e ninguem eliminado, vitoria dos aldeões");
+            // gameController.printLog("Sem lobisomem e ninguem eliminado, vitoria dos aldeões");
             mathDetailsText.text = "Sem lobisomem e ninguem eliminado.";
             villagersWin();
         }
         else
         {
-            // Debug.Log("Ninguém foi eliminado havendo algum lobisomem, vitoria dos Lobisomens");
+            // gameController.printLog("Ninguém foi eliminado havendo algum lobisomem, vitoria dos Lobisomens");
             mathDetailsText.text = "Ninguém foi eliminado havendo ao menos um lobisomem.";
             werewolvesWin();
         }
@@ -163,10 +163,10 @@ public class VotationController : MonoBehaviour
 
     private void votationDraw(string fisrtPlayer, string secondPlayer)
     {
-        // Debug.Log("Empate");
+        // gameController.printLog("Empate");
         if (getPlayerByKey(fisrtPlayer).isWerewolf() || getPlayerByKey(secondPlayer).isWerewolf())
         {
-            // Debug.Log("Pelo menos um dos eliminados era um lobisomem, vitoria dos aldeões");
+            // gameController.printLog("Pelo menos um dos eliminados era um lobisomem, vitoria dos aldeões");
             mathDetailsText.text = "Pelo menos um dos eliminados era um lobisomem.";
             villagersWin();
         }
@@ -174,13 +174,13 @@ public class VotationController : MonoBehaviour
         {
             if (gameController.isHasWerewolf())
             {
-                // Debug.Log("Nenhum dos jogadores eliminados era um lobisomem, vitoria dos lobisomens");
+                // gameController.printLog("Nenhum dos jogadores eliminados era um lobisomem, vitoria dos lobisomens");
                 mathDetailsText.text = "Nenhum dos jogadores eliminados era um lobisomem.";
                 werewolvesWin();
             }
             else
             {
-                // Debug.Log("Não haviam lobisomens e aldeões foram eliminados, ninguem ganha");
+                // gameController.printLog("Não haviam lobisomens e aldeões foram eliminados, ninguem ganha");
                 mathDetailsText.text = "Não haviam lobisomens e aldeões foram eliminados.";
                 everyoneLoses();
             }
@@ -191,7 +191,7 @@ public class VotationController : MonoBehaviour
     {
         if (getPlayerByKey(playerKey).isWerewolf())
         {
-            // Debug.Log("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " era um lobisomem, vitoria dos aldeoes");
+            // gameController.printLog("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " era um lobisomem, vitoria dos aldeoes");
             mathDetailsText.text = PlayersAreasConstants.playersAreaDictionary[playerKey] + " foi eliminado e era um lobisomem.";
             villagersWin();
         }
@@ -199,13 +199,13 @@ public class VotationController : MonoBehaviour
         {
             if (gameController.isHasWerewolf())
             {
-                // Debug.Log("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " não era um lobisomem, vitoria dos lobisomens");
+                // gameController.printLog("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " não era um lobisomem, vitoria dos lobisomens");
                 mathDetailsText.text = PlayersAreasConstants.playersAreaDictionary[playerKey] + " foi eliminado e não era um lobisomem.";
                 werewolvesWin();
             }
             else
             {
-                // Debug.Log("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " não haviam lobisomens, ninguem ganha");
+                // gameController.printLog("Eliminado ->" + PlayersAreasConstants.playersAreaDictionary[playerKey] + " não haviam lobisomens, ninguem ganha");
                 mathDetailsText.text = PlayersAreasConstants.playersAreaDictionary[playerKey] + " foi eliminado e não haviam lobisomens";
                 everyoneLoses();
             }
@@ -229,16 +229,12 @@ public class VotationController : MonoBehaviour
         {
             if (!player.isWerewolf())
             {
-                player.won();
-            }
-            else
-            {
-                player.lost();
+                player.win();
             }
         }
 
         mathResultText.text = "Vitória dos aldeões";
-        Debug.Log(mathResultText.text);
+        gameController.printLog(mathResultText.text);
     }
 
     private void werewolvesWin()
@@ -247,34 +243,26 @@ public class VotationController : MonoBehaviour
         {
             if (player.isWerewolf())
             {
-                player.won();
-            }
-            else
-            {
-                player.lost();
+                player.win();
             }
         }
 
         mathResultText.text = "Vitória dos lobisomens";
-        Debug.Log(mathResultText.text);
+        gameController.printLog(mathResultText.text);
     }
 
     private void everyoneLoses()
     {
-        foreach (var player in players)
-        {
-            player.lost();
-        }
-
         mathResultText.text = "Ninguém ganha";
-        Debug.Log(mathResultText.text);
+        gameController.printLog(mathResultText.text);
     }
 
     private void endVotation()
     {
         transform.gameObject.SetActive(false);
-        // middleArea.SetActive(true);
         Results.SetActive(true);
         gameController.matchEnded();
     }
+
+
 }

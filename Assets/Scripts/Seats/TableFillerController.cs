@@ -7,30 +7,62 @@ public class TableFillerController : MonoBehaviour
 {
     public int TABLES_START_AMOUNT = 100;
     public int ADD_TABLES_AMOUNT = 25;
+    public int minTableAmount = 50;
+    public int currentTables = 0;
+    public int tableCounter = 0;
     public GameObject tablePrefab;
     public List<SeatController> tables = new List<SeatController>();
-    Transform parent;
+    private Transform parent;
+    private string sceneName;
+
+    public List<SeatController> getTables()
+    {
+        return this.tables;
+    }
+
+    public void setTables(List<SeatController> tables)
+    {
+        this.tables = tables;
+    }
+
+
+    public int getCurrentTables()
+    {
+        return this.currentTables;
+    }
+
+    public void setCurrentTables(int currentTables)
+    {
+        this.currentTables = currentTables;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(SceneManager.GetActiveScene().name);
-
+        sceneName = SceneManager.GetActiveScene().name;
         parent = GameObject.Find("Board").transform;
         for (int i = 0; i < TABLES_START_AMOUNT; i++)
         {
+            setCurrentTables(getCurrentTables() + 1);
+            tableCounter++;
             GameObject table = Instantiate(tablePrefab, tablePrefab.transform.position, tablePrefab.transform.rotation);
             table.transform.SetParent(parent);
-            table.name = "Table " + (i + 1);
+            table.name = "Table " + tableCounter;
             tables.Add(table.GetComponent<SeatController>());
         }
-
-        InvokeRepeating("addTables", 2.0f * Time.timeScale / 100, 4.0f * Time.timeScale / 100);
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (sceneName.Equals("NeatScene"))
+        {
+            if (getCurrentTables() < minTableAmount)
+            {
+                addTables();
+            }
+        }
+        // InvokeRepeating("addTables", 2.0f * Time.timeScale / 100, 4.0f * Time.timeScale / 100);
     }
 
     public SeatController getTable()
@@ -57,20 +89,24 @@ public class TableFillerController : MonoBehaviour
 
     public void addTable()
     {
+        setCurrentTables(getCurrentTables() + 1);
+        tableCounter++;
         GameObject table = Instantiate(tablePrefab, tablePrefab.transform.position, tablePrefab.transform.rotation);
         table.transform.SetParent(parent);
         tables.Add(table.GetComponent<SeatController>());
-        table.name = "Table " + (tables.Count);
+        table.name = "Table " + tableCounter;
     }
 
     public void addTables()
     {
         for (int i = 0; i < ADD_TABLES_AMOUNT; i++)
         {
+            setCurrentTables(getCurrentTables() + 1);
+            tableCounter++;
             GameObject table = Instantiate(tablePrefab, tablePrefab.transform.position, tablePrefab.transform.rotation);
             table.transform.SetParent(parent);
             tables.Add(table.GetComponent<SeatController>());
-            table.name = "Table " + (tables.Count);
+            table.name = "Table " + tableCounter;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace UnitySharpNEAT
         private bool _isActive;
 
 
-        protected virtual void FixedUpdate()
+        public virtual void FixedUpdate()
         {
             if (IsActive)
             {

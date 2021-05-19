@@ -14,6 +14,8 @@ public class GameController : MonoBehaviour
     public Text stageText;
     public GameObject discussionArea;
     public GameObject Votation;
+    public GameObject ActionsArea;
+    public GameObject RestartGameBtn;
     public enum CharsSequence { Werewolf, Seer, Robber, Villager, None };
     public CharsSequence CURRENT_ROLE = CharsSequence.Werewolf;
     private PlayerController playerController;
@@ -32,10 +34,11 @@ public class GameController : MonoBehaviour
     private bool hasHumanPlayer = false;
     private bool doneSetup = false;
     private bool ended = false;
+    private TableFillerController tableFillerController;
 
     void Start()
     {
-
+        tableFillerController = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
     }
 
     void Update()
@@ -47,9 +50,16 @@ public class GameController : MonoBehaviour
             wakeOrder();
         }
 
+        // if (ended && isHasHumanPlayer())
+        if (ended)
+        {
+            RestartGameBtn.SetActive(true);
+        }
+
         if (ended && transform.childCount == 2)
         {
-            // gameObject.SetActive(false);
+            tableFillerController.setCurrentTables(tableFillerController.getCurrentTables() - 1);
+            tableFillerController.getTables().Remove(GetComponent<SeatController>());
             Destroy(gameObject);
         }
     }
@@ -307,6 +317,7 @@ public class GameController : MonoBehaviour
             {
                 this.playerController = player as PlayerController;
                 setHasHumanPlayer(true);
+                ActionsArea.SetActive(true);
             }
 
             if (player.isWerewolf())
@@ -645,7 +656,7 @@ public class GameController : MonoBehaviour
         this.hasHumanPlayer = hasHumanPlayer;
     }
 
-    private void printLog(string text)
+    public void printLog(string text)
     {
         if (debug)
             Debug.Log(text);
@@ -653,14 +664,12 @@ public class GameController : MonoBehaviour
 
     public void matchEnded()
     {
-        TableFillerController tableFillerController = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
-        tableFillerController.realocatePlayers(players);
+        // tableFillerController.realocatePlayers(players);
         ended = true;
     }
 
     public void newMatch()
     {
-        TableFillerController tableFillerController = GameObject.Find("TableFiller").GetComponent<TableFillerController>();
         tableFillerController.addTable();
         tableFillerController.realocatePlayers(players);
     }

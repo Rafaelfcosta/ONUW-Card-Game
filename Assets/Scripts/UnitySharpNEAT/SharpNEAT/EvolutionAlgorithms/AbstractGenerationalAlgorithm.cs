@@ -137,9 +137,6 @@ namespace SharpNeat.EvolutionAlgorithms
             _populationSize = _genomeList.Count;
             _runState = RunState.Ready;
             _updateScheme = new UpdateScheme(new TimeSpan(0, 0, 1));
-            // uint num = new uint();
-            // num = 10;
-            // _updateScheme = new UpdateScheme(num);
         }
 
         /// <summary>

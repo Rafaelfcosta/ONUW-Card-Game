@@ -7,16 +7,16 @@ public class PlayerFactory : MonoBehaviour
     public bool botsOnly = false;
     public GameObject playerPrefab;
     public GameObject botPrefab;
+    private static List<Vector3> positions = new List<Vector3>(new Vector3[] {
+        new Vector3(-871.5f, -419f, 0),
+        new Vector3(-871.5f, 418.5f, 0),
+        new Vector3(871.5f, 418.5f, 0),
+        new Vector3(871.5f, -419f, 0)
+    });
 
     void Start()
     {
         Transform parent = GameObject.Find("Board").transform;
-
-        List<Vector3> positions = new List<Vector3>();
-        positions.Add(new Vector3(-871.5f, -419f, 0));
-        positions.Add(new Vector3(-871.5f, 418.5f, 0));
-        positions.Add(new Vector3(871.5f, 418.5f, 0));
-        positions.Add(new Vector3(871.5f, -419f, 0));
 
         for (int i = 0; i < 4; i++)
         {
@@ -45,6 +45,8 @@ public class PlayerFactory : MonoBehaviour
         player.transform.SetParent(parent);
         player.name = name;
         player.transform.position = position;
-        // player.GetComponent<PlayerBase>().dialogBox = GameObject.Find("DialogBoxes").transform.GetChild(dialogPos).gameObject;
+        FindSeatController findSeatController = player.GetComponent<FindSeatController>();
+        findSeatController.setTbc(GameObject.Find("TableFiller").GetComponent<TableFillerController>());
+        findSeatController.seat(findSeatController.getTbc().getTable());
     }
 }

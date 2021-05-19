@@ -24,7 +24,8 @@ public interface IPlayer
     bool startedAsVillager();
     bool startedAsRobber();
     bool startedAsSeer();
-    void won();
-    void lost();
+    bool isWinner();
+    void win();
     Dictionary<string, OrderedDictionary> getRecords();
+    OrderedDictionary getMyRecords();
 }
