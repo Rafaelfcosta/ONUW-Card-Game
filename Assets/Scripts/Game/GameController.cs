@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
     public GameObject discussionArea;
     public GameObject Votation;
     public GameObject ActionsArea;
+    public GameObject EndTurnBtn;
     public GameObject RestartGameBtn;
     public enum CharsSequence { Werewolf, Seer, Robber, Villager, None };
     public CharsSequence CURRENT_ROLE = CharsSequence.Werewolf;
@@ -43,8 +44,12 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        checkClicked();
+        if (isHasHumanPlayer())
+        {
+            checkClicked();
+        }
         //checkTimer();
+        checkPlayerActions();
         if (doneSetup)
         {
             wakeOrder();
@@ -61,6 +66,18 @@ public class GameController : MonoBehaviour
             tableFillerController.setCurrentTables(tableFillerController.getCurrentTables() - 1);
             tableFillerController.getTables().Remove(GetComponent<SeatController>());
             Destroy(gameObject);
+        }
+    }
+
+    private void checkPlayerActions()
+    {
+        if (isHasHumanPlayer())
+        {
+            if (!playerController.isHasRemainingInteractions() && CURRENT_STAGE.Equals(GameStage.NIGHT) && !playerController.startedAsVillager())
+            {
+                EndTurnBtn.SetActive(true);
+            }
+
         }
     }
 
@@ -117,10 +134,18 @@ public class GameController : MonoBehaviour
             if (stage == GameStage.DAY)
             {
                 stageText.text = "Etapa atual: " + "Dia";
+                EndTurnBtn.SetActive(false);
 
                 if (isHasHumanPlayer())
                 {
-                    hintText.text = "Neste momento você deve compartilhar as informações que sabe e questionar outros jogadores";
+                    if ((playerController.startedAsRobber() && playerController.isWerewolf()) || (playerController.startedAsWerewolf() && playerController.isWerewolf()))
+                    {
+                        hintText.text = "Neste momento você deve blefar para não ser descoberto pelos outros jogadores";
+                    }
+                    else
+                    {
+                        hintText.text = "Neste momento você deve compartilhar as informações que sabe com os outros jogadores";
+                    }
                     Instantiate(discussionArea, GameObject.Find("UI").transform, false);
                 }
 
@@ -135,11 +160,15 @@ public class GameController : MonoBehaviour
                     {
                         printLog(PlayersAreasConstants.playersAreaDictionary[player.name] + " -> " + card.Key + ", " + card.Value.name);
                     }
-                    player.sayTruth();
+                    if (!player.isHumanPlayer())
+                        player.sayTruth();
                     // player.askRandomPlayer();
                 }
 
-                Invoke("nextStage", 0.1f);
+                if (!isHasHumanPlayer())
+                {
+                    Invoke("doNextStage", 0.1f);
+                }
             }
             else
             {
@@ -166,7 +195,14 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void nextStage()
+    public void nextStage()
+    {
+        // startStage(GameStage.VOTING);
+        // Invoke("doNextStage", 5f);
+        Invoke("doNextStage", .1f);
+    }
+
+    public void doNextStage()
     {
         startStage(GameStage.VOTING);
     }
@@ -286,19 +322,11 @@ public class GameController : MonoBehaviour
 
     public void initialSetup()
     {
-        // if (players != null)
-        // {
-        //     players.Clear();
-
-        // }
         cards.Clear();
 
         players = new List<PlayerBase>(gameObject.FindComponentsInChildrenWithTag<PlayerBase>("player"));
 
-        if (this.middleArea == null)
-        {
-            this.middleArea = transform.Find("MiddleArea").gameObject;
-        }
+        middleArea = transform.Find("MiddleArea").gameObject;
 
         DrawCards drawCards = GetComponent<DrawCards>();
 
@@ -372,7 +400,7 @@ public class GameController : MonoBehaviour
                         }
                         break;
                     case "Robber":
-                        setPlayerCardText("Ladrão", "Você pode escolher a carta de outro jogador e trocar pela sua.");
+                        setPlayerCardText("Ladrão", "Você deve escolher a carta de outro jogador e trocar pela sua.");
                         playerController.setMaxInteractions(1);
                         if (areaName != PlayersAreasConstants.middle && areaName != PlayersAreasConstants.player)
                         {
@@ -382,7 +410,7 @@ public class GameController : MonoBehaviour
                     case "Werewolf":
                         if (lonelyWolf)
                         {
-                            setPlayerCardText("Lobisomem", "Você é o único lobisomem, por isso pode olhar uma carta ao centro.");
+                            setPlayerCardText("Lobisomem", "Você é o único lobisomem, por isso deve olhar uma carta ao centro.");
                             playerController.setMaxInteractions(1);
                         }
                         else
@@ -464,6 +492,7 @@ public class GameController : MonoBehaviour
         toggleAllCardsVisible(false);
         TimerController.active = false;
         CURRENT_ROLE++;
+
     }
 
     private void checkTimer()
@@ -672,5 +701,14 @@ public class GameController : MonoBehaviour
     {
         tableFillerController.addTable();
         tableFillerController.realocatePlayers(players);
+    }
+    public PlayerController getPlayerController()
+    {
+        return this.playerController;
+    }
+
+    public void setPlayerController(PlayerController playerController)
+    {
+        this.playerController = playerController;
     }
 }

@@ -16,10 +16,11 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public List<PlayerBase> players;
     private Dictionary<string, GameObject> cardsAndPlace = new Dictionary<string, GameObject>();
     public GameObject dialogBox;
-    private NeuralNetworkRecords records = new NeuralNetworkRecords();
+    private NeuralNetworkRecords neuralNetRecords = new NeuralNetworkRecords();
     private bool winner = false;
     private bool voted = false;
     private int voteOption = -1;
+    private List<string> phrases = new List<string>();
 
     public virtual void Start()
     {
@@ -38,11 +39,11 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         setInitialCard(transform.GetChild(0).gameObject);
         setCurrentCard(getInitialCard());
 
-        getMyRecords()["Sou um " + CharactersNamesConstants.charsNameDictionary[getInitialCardName()]] = 1;
+        getNeuralNetRecords().getMyRecords()["Sou um " + CharactersNamesConstants.charsNameDictionary[getInitialCardName()]] = 1;
 
-        // foreach (var key in getMyRecords().Keys)
+        // foreach (var key in getNeuralNetRecords().getMyRecords().Keys)
         // {
-        //     Debug.Log(key + " = " + getMyRecords()[key]);
+        //     Debug.Log(key + " = " + getNeuralNetRecords().getMyRecords()[key]);
         // }
     }
 
@@ -62,9 +63,9 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         setTruthSaid(false);
         setAsked(false);
         getCardsAndPlace().Clear();
-        getRecords().Clear();
+        getNeuralNetRecords().getRecords().Clear();
+        getNeuralNetRecords().getMyRecords().Clear();
         players.Clear();
-        getMyRecords().Clear();
         setVoteOption(-1);
 
         if (transform.childCount > 0)
@@ -227,7 +228,6 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         sayTruthText.text = text;
     }
     public virtual void bluff() { }
-
     public bool isWerewolf()
     {
         return getCurrentCardName().Equals(CharactersNamesConstants.werewolf);
@@ -296,18 +296,18 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     protected override void UpdateBlackBoxInputs(ISignalArray inputSignalArray)
     {
         int count = 0;
-        foreach (var player in getRecords().Keys)
+        foreach (var player in getNeuralNetRecords().getRecords().Keys)
         {
-            foreach (var input in getRecords()[player].Keys)
+            foreach (var input in getNeuralNetRecords().getRecords()[player].Keys)
             {
-                inputSignalArray[count] = (int)getRecords()[player][input];
+                inputSignalArray[count] = (int)getNeuralNetRecords().getRecords()[player][input];
                 count++;
             }
         }
 
-        foreach (var sureItem in getMyRecords().Keys)
+        foreach (var certain in getNeuralNetRecords().getMyRecords().Keys)
         {
-            inputSignalArray[count] = (int)getMyRecords()[sureItem];
+            inputSignalArray[count] = (int)getNeuralNetRecords().getMyRecords()[certain];
             count++;
         }
     }
@@ -323,7 +323,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         }
 
         double max = values.Max();
-        Debug.Log("Vote = " + values.IndexOf(max));
+        // Debug.Log("Vote = " + values.IndexOf(max));
         setVoteOption(values.IndexOf(max));
     }
 
@@ -372,11 +372,13 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
                 }
             }
         }
-        return fitness * 0.2f;
+        // return fitness * 0.2f;
+        return fitness;
     }
 
     protected override void HandleIsActiveChanged(bool newIsActive)
     {
+        // Debug.Log(newIsActive);
         if (newIsActive)
         {
             FindSeatController findSeatController = GetComponent<FindSeatController>();
@@ -406,13 +408,16 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         {
             if (!player.isHumanPlayer())
             {
-
-                OrderedDictionary afirmations = player.getRecords()[name];
+                OrderedDictionary afirmations = player.getNeuralNetRecords().getRecords()[name];
 
                 if (afirmations.Contains(text))
                 {
                     afirmations[text] = 1;
-                    // Debug.Log(name + " -> " + player.name + " " + text + " = " + player.getRecords()[name][text]);
+                    Debug.Log(name + " ADDING TO -> " + player.name + " " + text + " = " + player.getNeuralNetRecords().getRecords()[name][text]);
+                }
+                else
+                {
+                    Debug.Log(text);
                 }
             }
         }
@@ -432,14 +437,9 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     }
     public virtual void askRandomPlayer() { }
 
-    public Dictionary<string, OrderedDictionary> getRecords()
+    public NeuralNetworkRecords getNeuralNetRecords()
     {
-        return this.records.records;
-    }
-
-    public OrderedDictionary getMyRecords()
-    {
-        return this.records.myRecords;
+        return this.neuralNetRecords;
     }
 
     public bool isVoted()

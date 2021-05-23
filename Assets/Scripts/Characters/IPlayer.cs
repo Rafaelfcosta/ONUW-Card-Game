@@ -26,6 +26,5 @@ public interface IPlayer
     bool startedAsSeer();
     bool isWinner();
     void win();
-    Dictionary<string, OrderedDictionary> getRecords();
-    OrderedDictionary getMyRecords();
+    NeuralNetworkRecords getNeuralNetRecords();
 }
