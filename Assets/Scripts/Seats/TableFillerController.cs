@@ -40,7 +40,7 @@ public class TableFillerController : MonoBehaviour
     void Start()
     {
         sceneName = SceneManager.GetActiveScene().name;
-        parent = GameObject.Find("Board").transform;
+        parent = GameObject.Find("MainBoard").transform;
         for (int i = 0; i < TABLES_START_AMOUNT; i++)
         {
             setCurrentTables(getCurrentTables() + 1);

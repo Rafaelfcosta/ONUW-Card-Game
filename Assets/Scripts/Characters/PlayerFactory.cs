@@ -16,7 +16,7 @@ public class PlayerFactory : MonoBehaviour
 
     void Start()
     {
-        Transform parent = GameObject.Find("Board").transform;
+        Transform parent = GameObject.Find("MainBoard").transform;
 
         for (int i = 0; i < 4; i++)
         {

@@ -98,6 +98,9 @@ namespace UnitySharpNEAT
 
                             fitnessDict.Add(genome, new FitnessInfo[_neatSupervisor.Trials]);
                             dict.Add(genome, phenome);
+                            
+                            _neatSupervisor.ModifiedDeactivateUnit((IBlackBox)phenome);
+                            _neatSupervisor.ModifiedActivateUnit((IBlackBox)phenome);
                         }
                     }
                 }
@@ -123,6 +126,10 @@ namespace UnitySharpNEAT
                         FitnessInfo fitnessInfo = _phenomeEvaluator.GetLastFitness(phenome);
 
                         fitnessDict[genome][i] = fitnessInfo;
+
+                        //added
+                        _neatSupervisor.ModifiedDeactivateUnit((IBlackBox)phenome);
+                        _neatSupervisor.ModifiedActivateUnit((IBlackBox)phenome);
                     }
                 }
             }
@@ -153,6 +160,8 @@ namespace UnitySharpNEAT
 
                     // The phenome has performed, deactivate the Unit the phenome was assigned to.
                     _neatSupervisor.DeactivateUnit((IBlackBox)phenome);
+
+
                 }
             }
             yield return 0;

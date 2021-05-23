@@ -60,6 +60,10 @@ namespace UnitySharpNEAT
             BlackBox = blackBox;
             IsActive = true;
         }
+        public virtual void ModifiedActivateUnit()
+        {
+            IsActive = true;
+        }
 
         /// <summary>
         /// Called when the evolution stops or a generation is finished. 
@@ -67,6 +71,10 @@ namespace UnitySharpNEAT
         public virtual void DeactivateUnit()
         {
             BlackBox = null;
+            IsActive = false;
+        }
+        public virtual void ModifiedDeactivateUnit()
+        {
             IsActive = false;
         }
 

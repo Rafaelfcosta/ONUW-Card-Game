@@ -203,6 +203,11 @@ namespace UnitySharpNEAT
             UnitController controller = GetUnusedUnit(box);
             controller.ActivateUnit(box);
         }
+        public void ModifiedActivateUnit(IBlackBox box)
+        {
+            UnitController controller = _blackBoxMap[box];
+            controller.ModifiedActivateUnit();
+        }
 
         /// <summary>
         /// Deactivates and resets a Unit. Called after a generation has performed. 
@@ -217,6 +222,15 @@ namespace UnitySharpNEAT
 
                 _blackBoxMap.Remove(box);
                 PoolUnit(controller, false);
+            }
+        }
+
+        public void ModifiedDeactivateUnit(IBlackBox box)
+        {
+            if (_blackBoxMap.ContainsKey(box))
+            {
+                UnitController controller = _blackBoxMap[box];
+                controller.ModifiedDeactivateUnit();
             }
         }
 
