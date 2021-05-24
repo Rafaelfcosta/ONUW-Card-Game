@@ -6,9 +6,12 @@ using UnityEngine.UI;
 
 public class BotController : PlayerBase
 {
-    List<string> afirmationPhrases = new List<string>();
-    List<string> certainPhrases = new List<string>();
-
+    List<string> playersSequence = new List<string>
+    {
+        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player2],
+        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player3],
+        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player4]
+    };
     public override void initialize()
     {
         base.initialize();
@@ -48,7 +51,7 @@ public class BotController : PlayerBase
 
     public override void say()
     {
-        if (isWerewolf())
+        if (startedAsWerewolf() || (startedAsRobber() && isWerewolf()))
         {
             bluff();
         }
@@ -65,7 +68,32 @@ public class BotController : PlayerBase
 
     public override void bluff()
     {
+        // GameController gameController = transform.parent.GetComponent<GameController>();
+        // if (gameController.isLonelyWolf())
+        // {
+        //     foreach (var card in getCardsAndPlace().Values)
+        //     {
+        //         Debug.Log(card);
+        //     }
+        // }
+        // else
+        // {
 
+        // }
+        List<string> list = getNeuralNetRecords().getAfirmationPhrasesFiltered(name);
+        // foreach (var item in list)
+        // {
+        //     Debug.Log(item);
+        // }
+        int pos = Random.Range(0, list.Count);
+        string afirmation = list[pos];
+
+        Text afirmationText = null;
+        dialogBox.SetActive(true);
+        afirmationText = dialogBox.transform.GetChild(0).GetComponent<Text>();
+        // string text = DiscussionConstants.iStartedAs + CharactersNamesConstants.charsNameDictionary[getInitialCardName()];
+        afirmationText.text = afirmation;
+        addPlayerStatement(afirmation);
     }
 
     public override void askRandomPlayer()
@@ -88,7 +116,9 @@ public class BotController : PlayerBase
         string option;
         if (index < players.Count)
         {
-            option = players[index].name;
+            // option = players[index].name;
+            // Debug.Log(name + " : " + playersSequence[index] + " -->" + PlayersAreasConstants.playersPositionRelativesInverse[name][playersSequence[index]]);
+            option = PlayersAreasConstants.playersPositionRelativesInverse[name][playersSequence[index]];
         }
         else
         {
@@ -100,4 +130,3 @@ public class BotController : PlayerBase
         setVoted(true);
     }
 }
-

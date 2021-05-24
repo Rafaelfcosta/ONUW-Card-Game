@@ -14,10 +14,10 @@ public class VotationController : MonoBehaviour
     private List<PlayerBase> players;
     public Dictionary<string, int> votes = new Dictionary<string, int>
     {
-        { PlayersAreasConstants.player, 0 },
-        { PlayersAreasConstants.bot1, 0 },
-        { PlayersAreasConstants.bot2, 0 },
-        { PlayersAreasConstants.bot3, 0 },
+        { PlayersAreasConstants.player1, 0 },
+        { PlayersAreasConstants.player2, 0 },
+        { PlayersAreasConstants.player3, 0 },
+        { PlayersAreasConstants.player4, 0 },
     };
     public int skipVotes = 0;
     private int votesCount = 0;

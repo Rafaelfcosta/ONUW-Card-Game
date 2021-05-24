@@ -49,10 +49,6 @@ public class PlayerController : PlayerBase
         return true;
     }
 
-    public override void sayTruth()
-    {
-        base.sayTruth();
-    }
     public void bluff(string character, string bluffText)
     {
         Text sayText = null;

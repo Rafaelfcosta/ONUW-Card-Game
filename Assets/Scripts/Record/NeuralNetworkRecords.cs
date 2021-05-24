@@ -12,12 +12,12 @@ public class NeuralNetworkRecords
     {
         return this.myRecords;
     }
-    public Dictionary<string, OrderedDictionary> getRecords() {
-		return this.records;
-	}
+    public Dictionary<string, OrderedDictionary> getRecords()
+    {
+        return this.records;
+    }
     private List<string> afirmationPhrases = new List<string>();
     private List<string> certainPhrases = new List<string>();
-
     public List<string> getAfirmationPhrases()
     {
         return this.afirmationPhrases;
@@ -25,6 +25,20 @@ public class NeuralNetworkRecords
     public List<string> getCertainPhrases()
     {
         return this.certainPhrases;
+    }
+    public List<string> getAfirmationPhrasesFiltered(string playerToRemove)
+    {
+        // Debug.Log(playerToRemove);
+        // Debug.Log(PlayersAreasConstants.playersAreaDictionary[playerToRemove]);
+        List<string> temp = new List<string>();
+        foreach (var phrase in getAfirmationPhrases())
+        {
+            if (!phrase.Contains(PlayersAreasConstants.playersAreaDictionary[playerToRemove]))
+            {
+                temp.Add(phrase);
+            }
+        }
+        return temp;
     }
     public NeuralNetworkRecords()
     {
@@ -80,7 +94,7 @@ public class NeuralNetworkRecords
 
         foreach (var p in PlayersAreasConstants.playersAreaDictionary.Values)
         {
-            if (p != "Nenhum" && p != PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player])
+            if (p != "Nenhum" && p != PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player1])
             {
                 foreach (var role in CharactersNamesConstants.charsNameDictionary.Values)
                 {

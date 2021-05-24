@@ -161,8 +161,8 @@ public class GameController : MonoBehaviour
                         printLog(PlayersAreasConstants.playersAreaDictionary[player.name] + " -> " + card.Key + ", " + card.Value.name);
                     }
                     if (!player.isHumanPlayer())
-                        player.sayTruth();
-                    // player.askRandomPlayer();
+                        player.say();
+                    // player.sayTruth();
                 }
 
                 if (!isHasHumanPlayer())
@@ -273,7 +273,7 @@ public class GameController : MonoBehaviour
                         {
                             int playerToLook = UnityEngine.Random.Range(0, otherPlayers.Count);
                             GameObject lookedCard = otherPlayers[playerToLook].transform.GetChild(0).gameObject;
-
+                            botController.addPlayerCertain(otherPlayers[playerToLook].name, lookedCard);
                             botController.addCardAndPlace(lookedCard.transform.parent.name, lookedCard);
                         }
                     }
@@ -282,10 +282,12 @@ public class GameController : MonoBehaviour
                     int playerToRob = UnityEngine.Random.Range(0, otherPlayers.Count);
                     GameObject robberCard = botController.transform.GetChild(0).gameObject;
                     GameObject robbedCard = otherPlayers[playerToRob].transform.GetChild(0).gameObject;
-
+                    
+                    botController.addPlayerCertain(otherPlayers[playerToRob].name, robberCard);
                     botController.addCardAndPlace(robbedCard.transform.parent.name, robbedCard);
                     swapCards(robberCard, robbedCard);
 
+                    botController.changeMyCardCertain();
                     break;
                 case "Werewolf":
                     if (lonelyWolf)
@@ -304,6 +306,7 @@ public class GameController : MonoBehaviour
                                     if (otherWolf.name != wolf.name)
                                     {
                                         wolf.addCardAndPlace(otherWolf.name, otherWolf.getInitialCard());
+                                        wolf.addPlayerCertain(otherWolf.name, otherWolf.getInitialCard());
                                     }
                                 }
                             }
@@ -394,7 +397,7 @@ public class GameController : MonoBehaviour
                         setPlayerCardText("Vidente", "Você pode olhar duas cartas ao centro ou a carta de um jogador.");
                         playerController.setMaxInteractions(2);
 
-                        if (areaName != PlayersAreasConstants.player)
+                        if (areaName != PlayersAreasConstants.player1)
                         {
                             card.CanPlayerInteract = true;
                         }
@@ -402,7 +405,7 @@ public class GameController : MonoBehaviour
                     case "Robber":
                         setPlayerCardText("Ladrão", "Você deve escolher a carta de outro jogador e trocar pela sua.");
                         playerController.setMaxInteractions(1);
-                        if (areaName != PlayersAreasConstants.middle && areaName != PlayersAreasConstants.player)
+                        if (areaName != PlayersAreasConstants.middle && areaName != PlayersAreasConstants.player1)
                         {
                             card.CanPlayerInteract = true;
                         }
@@ -423,7 +426,7 @@ public class GameController : MonoBehaviour
                                 card.show();
 
                                 string parentName = card.transform.parent.name;
-                                if (!parentName.Equals(PlayersAreasConstants.player))
+                                if (!parentName.Equals(PlayersAreasConstants.player1))
                                 {
                                     playerController.addCardAndPlace(parentName, card.gameObject);
                                 }
@@ -710,5 +713,15 @@ public class GameController : MonoBehaviour
     public void setPlayerController(PlayerController playerController)
     {
         this.playerController = playerController;
+    }
+
+    public bool isLonelyWolf()
+    {
+        return this.lonelyWolf;
+    }
+
+    public void setLonelyWolf(bool lonelyWolf)
+    {
+        this.lonelyWolf = lonelyWolf;
     }
 }

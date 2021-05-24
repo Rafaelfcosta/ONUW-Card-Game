@@ -130,17 +130,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     {
         this.truthSaid = truthSaid;
     }
-    public virtual void say()
-    {
-        if (isWerewolf())
-        {
-            bluff();
-        }
-        else
-        {
-            sayTruth();
-        }
-    }
+    public virtual void say() { }
 
     public virtual void sayTruth()
     {
@@ -153,6 +143,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
 
         if (getCardsAndPlace().Count > 0)
         {
+            string playerName = null;
             int count = 0;
             List<string> middleCards = new List<string>();
             foreach (var card in getCardsAndPlace())
@@ -161,20 +152,15 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
                 {
                     if (count.Equals(0))
                     {
-                        // string mc = getCardName(card.Value);
-                        // text += "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a + CharactersNamesConstants.charsNameDictionary[mc];
                         middleCards.Add(getCardName(card.Value));
                     }
                     else
                     {
-                        // string mc = getCardName(card.Value);
-                        // text += DiscussionConstants.andA + CharactersNamesConstants.charsNameDictionary[mc];
                         middleCards.Add(getCardName(card.Value));
                     }
                 }
                 else
                 {
-                    // if (getCardName(getInitialCard()).Equals(CharactersNamesConstants.robber))
                     if (startedAsRobber())
                     {
                         text += "\n" + DiscussionConstants.switchedCardWith + PlayersAreasConstants.playersAreaDictionary[card.Key];
@@ -183,6 +169,8 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
                     {
                         text += "\n" + DiscussionConstants.lookedAtPlayer + PlayersAreasConstants.playersAreaDictionary[card.Key];
                     }
+
+                    playerName = card.Key;
 
                     text += DiscussionConstants.andItWas + CharactersNamesConstants.charsNameDictionary[getCardName(card.Value)];
                 }
@@ -217,7 +205,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
             }
             else
             {
-                addPlayerStatement(text);
+                addPlayerStatement(text, playerName);
             }
         }
         else
@@ -291,6 +279,28 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
             BlackBox.Activate();
             UseBlackBoxOutpts(BlackBox.OutputSignalArray);
         }
+
+        // Debug.Log("Records from --> " + name);
+        // foreach (var player in getNeuralNetRecords().getRecords().Keys)
+        // {
+        //     foreach (var input in getNeuralNetRecords().getRecords()[player].Keys)
+        //     {
+        //         int val = (int)getNeuralNetRecords().getRecords()[player][input];
+        //         if (val == 1)
+        //         {
+        //             Debug.Log(player + " > " + input + " == " + val);
+        //         }
+        //     }
+        // }
+        // foreach (var certain in getNeuralNetRecords().getMyRecords().Keys)
+        // {
+        //     int val = (int)getNeuralNetRecords().getMyRecords()[certain];
+        //     if (val == 1)
+        //     {
+        //         Debug.Log(certain + " == " + val);
+        //     }
+        // }
+        // Debug.Log("-----------------");
     }
 
     protected override void UpdateBlackBoxInputs(ISignalArray inputSignalArray)
@@ -413,16 +423,37 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
                 if (afirmations.Contains(text))
                 {
                     afirmations[text] = 1;
-                    Debug.Log(name + " ADDING TO -> " + player.name + " " + text + " = " + player.getNeuralNetRecords().getRecords()[name][text]);
+                    // Debug.Log(name + " ADDING TO -> " + player.name + " " + text + " = " + player.getNeuralNetRecords().getRecords()[name][text]);
                 }
                 else
                 {
-                    Debug.Log(text);
+                    Debug.Log("NOT FOUND -> " + text);
                 }
             }
         }
+    }
+    public void addPlayerStatement(string text, string playerName)
+    {
+        foreach (var player in players)
+        {
+            if (!player.isHumanPlayer())
+            {
+                // Debug.Log(player.name + " " + playerName + " = " + PlayersAreasConstants.playersPositionRelatives[player.name][playerName]);
+                string updatedText = text.Replace(PlayersAreasConstants.playersAreaDictionary[playerName], PlayersAreasConstants.playersPositionRelatives[player.name][playerName]);
+                // Debug.Log(text + " /// " + updatedText);
+                OrderedDictionary afirmations = player.getNeuralNetRecords().getRecords()[name];
 
-
+                if (afirmations.Contains(updatedText))
+                {
+                    afirmations[updatedText] = 1;
+                    // Debug.Log(name + " ADDING TO -> " + player.name + " " + updatedText + " = " + player.getNeuralNetRecords().getRecords()[name][updatedText]);
+                }
+                else
+                {
+                    Debug.Log("NOT FOUND -> " + updatedText);
+                }
+            }
+        }
     }
 
     public void askPlayer(PlayerBase player)
@@ -460,5 +491,15 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     public void setVoteOption(int voteOption)
     {
         this.voteOption = voteOption;
+    }
+    public void addPlayerCertain(string otherPlayerName, GameObject card)
+    {
+        getNeuralNetRecords().getMyRecords()[PlayersAreasConstants.playersPositionRelatives[name][otherPlayerName] + " é um(a) " + CharactersNamesConstants.charsNameDictionary[getCardName(card)]] = 1;
+    }
+
+    public void changeMyCardCertain()
+    {
+        getNeuralNetRecords().getMyRecords()["Sou um " + CharactersNamesConstants.charsNameDictionary[getInitialCardName()]] = 0;
+        getNeuralNetRecords().getMyRecords()["Sou um " + CharactersNamesConstants.charsNameDictionary[getCurrentCardName()]] = 1;
     }
 }

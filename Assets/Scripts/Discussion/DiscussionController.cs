@@ -17,23 +17,6 @@ public class DiscussionController : MonoBehaviour
         gameController = gameObject.transform.parent.parent.GetComponent<GameController>();
         phrasesDrop = phrasesObject.GetComponent<Dropdown>();
         charsDrop = charsObject.GetComponent<Dropdown>();
-        List<Dropdown.OptionData> charsOptions = new List<Dropdown.OptionData>();
-
-        foreach (var role in CharactersNamesConstants.charsNameDictionary.Values)
-        {
-            if (role != CharactersNamesConstants.lobisomem)
-            {
-                charsOptions.Add(new Dropdown.OptionData(role));
-            }
-        }
-        charsDrop.AddOptions(charsOptions);
-
-        charsDrop.onValueChanged.AddListener(delegate
-        {
-            changeBluffOptions(charsDrop.options[charsDrop.value].text);
-        });
-
-        changeBluffOptions(charsDrop.options[charsDrop.value].text);
 
         if (gameController.getPlayerController().startedAsWerewolf() || (gameController.getPlayerController().startedAsRobber() && gameController.getPlayerController().isWerewolf()))
         {
@@ -57,6 +40,24 @@ public class DiscussionController : MonoBehaviour
 
     void bluff()
     {
+        List<Dropdown.OptionData> charsOptions = new List<Dropdown.OptionData>();
+
+        foreach (var role in CharactersNamesConstants.charsNameDictionary.Values)
+        {
+            if (role != CharactersNamesConstants.lobisomem)
+            {
+                charsOptions.Add(new Dropdown.OptionData(role));
+            }
+        }
+        charsDrop.AddOptions(charsOptions);
+
+        charsDrop.onValueChanged.AddListener(delegate
+        {
+            changeBluffOptions(charsDrop.options[charsDrop.value].text);
+        });
+
+        changeBluffOptions(charsDrop.options[charsDrop.value].text);
+
         Button sayBluffBtn = sayObject.GetComponent<Button>();
         Text sayBluffBtnText = sayObject.GetComponentInChildren<Text>();
         sayBluffBtnText.text = "Blefar";
@@ -91,7 +92,7 @@ public class DiscussionController : MonoBehaviour
             List<Dropdown.OptionData> phrasesOptions = new List<Dropdown.OptionData>();
             foreach (var phrase in gameController.getPlayerController().getNeuralNetRecords().getAfirmationPhrases())
             {
-                if (!phrase.Contains(PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player]))
+                if (!phrase.Contains(PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player1]))
                 {
                     if (phrase.StartsWith(DiscussionConstants.iStartedAs + op))
                     {

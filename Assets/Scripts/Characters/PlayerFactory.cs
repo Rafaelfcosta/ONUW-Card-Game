@@ -24,11 +24,11 @@ public class PlayerFactory : MonoBehaviour
             {
                 if (botsOnly)
                 {
-                    createPlayer(botPrefab, parent, PlayersAreasConstants.player, positions[i], i);
+                    createPlayer(botPrefab, parent, PlayersAreasConstants.player1, positions[i], i);
                 }
                 else
                 {
-                    createPlayer(playerPrefab, parent, PlayersAreasConstants.player, positions[i], i);
+                    createPlayer(playerPrefab, parent, PlayersAreasConstants.player1, positions[i], i);
                 }
             }
             else
