@@ -200,13 +200,17 @@ namespace UnitySharpNEAT
         /// </summary>
         public void ActivateUnit(IBlackBox box)
         {
+
             UnitController controller = GetUnusedUnit(box);
             controller.ActivateUnit(box);
         }
         public void ModifiedActivateUnit(IBlackBox box)
         {
-            UnitController controller = _blackBoxMap[box];
-            controller.ModifiedActivateUnit();
+            if (_blackBoxMap.ContainsKey(box))
+            {
+                UnitController controller = _blackBoxMap[box];
+                controller.ModifiedActivateUnit();
+            }
         }
 
         /// <summary>
@@ -315,6 +319,13 @@ namespace UnitySharpNEAT
 
             CurrentBestFitness = EvolutionAlgorithm.Statistics._maxFitness;
             CurrentGeneration = EvolutionAlgorithm.CurrentGeneration;
+
+            if (CurrentGeneration % 5 == 0)
+            {
+                Utility.Log("Saving backup");    
+                Experiment.SavePopulation(EvolutionAlgorithm.GenomeList);
+                Experiment.SaveChampion(EvolutionAlgorithm.CurrentChampGenome);
+            }
         }
 
         /// <summary>
