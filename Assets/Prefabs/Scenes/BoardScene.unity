@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 303f614d816898740b754898f4bdba2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  botsOnly: 0
+  botsOnly: 1
   playerPrefab: {fileID: 2001814776835544875, guid: 29ac3956eafa67c4592ec2fd839df8a5,
     type: 3}
   botPrefab: {fileID: 2001814776835544875, guid: cbc1c9d50be9071429933fb4ea5a73bb,

@@ -12,6 +12,11 @@ public class BotController : PlayerBase
         PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player3],
         PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player4]
     };
+    List<string> possibleCharacters = new List<string> {
+        CharactersNamesConstants.aldeao,
+        CharactersNamesConstants.ladrao,
+        CharactersNamesConstants.lobisomem
+    };
     public override void initialize()
     {
         base.initialize();
@@ -68,19 +73,31 @@ public class BotController : PlayerBase
 
     public override void bluff()
     {
-        // GameController gameController = transform.parent.GetComponent<GameController>();
-        // if (gameController.isLonelyWolf())
-        // {
-        //     foreach (var card in getCardsAndPlace().Values)
-        //     {
-        //         Debug.Log(card);
-        //     }
-        // }
-        // else
-        // {
+        Text afirmationText = null;
+        dialogBox.SetActive(true);
+        afirmationText = dialogBox.transform.GetChild(0).GetComponent<Text>();
 
-        // }
-        List<string> list = getNeuralNetRecords().getAfirmationPhrasesFiltered(name);
+        GameController gameController = transform.parent.GetComponent<GameController>();
+        List<string> list;
+        string otherWolf = string.Empty;
+        if (startedAsWerewolf() && !gameController.isLonelyWolf())
+        {
+            foreach (var wolf in gameController.getWolfs())
+            {
+                if (wolf.name != name)
+                {
+                    otherWolf = wolf.name;
+                    break;
+                }
+            }
+            list = getNeuralNetRecords().getAfirmationPhrasesFiltered(name, otherWolf);
+        }
+        else
+        {
+            list = getNeuralNetRecords().getAfirmationPhrasesFiltered(name);
+        }
+
+        // Debug.Log(name + "-------------");
         // foreach (var item in list)
         // {
         //     Debug.Log(item);
@@ -88,12 +105,37 @@ public class BotController : PlayerBase
         int pos = Random.Range(0, list.Count);
         string afirmation = list[pos];
 
-        Text afirmationText = null;
-        dialogBox.SetActive(true);
-        afirmationText = dialogBox.transform.GetChild(0).GetComponent<Text>();
-        // string text = DiscussionConstants.iStartedAs + CharactersNamesConstants.charsNameDictionary[getInitialCardName()];
-        afirmationText.text = afirmation;
-        addPlayerStatement(afirmation);
+        if (afirmation.Contains(DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a))
+        {
+            List<string> tempList = new List<string>(possibleCharacters);
+            int n = Random.Range(0, tempList.Count);
+            string first = tempList[n];
+            tempList.RemoveAt(n);
+
+            n = Random.Range(0, tempList.Count);
+            string second = tempList[n];
+            tempList.RemoveAt(n);
+
+            addPlayerStatement(generateLookedPhrase(first));
+            addPlayerStatement(generateLookedPhrase(second));
+
+            afirmationText.text = generateLookedVisualPhrase(first, second);
+        }
+        else
+        {
+            if (getPlayerNumFromText(afirmation).Equals(-1))
+            {
+                addPlayerStatement(afirmation);
+            }
+            else
+            {
+                int num = getPlayerNumFromText(afirmation);
+                string player = "Player" + num;
+                afirmationText.text = afirmation;
+                // Debug.Log(name + " -> " + player + " //" + afirmation);
+                addPlayerStatement(afirmation, player);
+            }
+        }
     }
 
     public override void askRandomPlayer()
@@ -126,7 +168,29 @@ public class BotController : PlayerBase
         }
         VotationController votationController = transform.parent.Find("UI").gameObject.FindComponentInChildWithTag<VotationController>("votation");
         votationController.addVoteToPlayer(option);
-        Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " voted for -> " + PlayersAreasConstants.playersAreaDictionary[option]);
+        // Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " voted for -> " + PlayersAreasConstants.playersAreaDictionary[option]);
         setVoted(true);
+    }
+
+    private string generateLookedPhrase(string role)
+    {
+        return DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtMiddleAndSaw + DiscussionConstants.a + role;
+    }
+    private string generateLookedVisualPhrase(string role1, string role2)
+    {
+        return DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtMiddleAndSaw
+        + DiscussionConstants.a + role1 + DiscussionConstants.andA + role2;
+    }
+
+    private int getPlayerNumFromText(string text)
+    {
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (System.Char.IsDigit(text[i]))
+            {
+                return int.Parse(text[i].ToString());
+            }
+        }
+        return -1;
     }
 }
