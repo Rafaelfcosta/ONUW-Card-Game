@@ -282,7 +282,7 @@ public class GameController : MonoBehaviour
                     int playerToRob = UnityEngine.Random.Range(0, otherPlayers.Count);
                     GameObject robberCard = botController.transform.GetChild(0).gameObject;
                     GameObject robbedCard = otherPlayers[playerToRob].transform.GetChild(0).gameObject;
-                    
+
                     botController.addPlayerCertain(otherPlayers[playerToRob].name, robberCard);
                     botController.addCardAndPlace(robbedCard.transform.parent.name, robbedCard);
                     swapCards(robberCard, robbedCard);
@@ -723,5 +723,10 @@ public class GameController : MonoBehaviour
     public void setLonelyWolf(bool lonelyWolf)
     {
         this.lonelyWolf = lonelyWolf;
+    }
+
+    public List<PlayerBase> getWolfs()
+    {
+        return this.wolfs;
     }
 }

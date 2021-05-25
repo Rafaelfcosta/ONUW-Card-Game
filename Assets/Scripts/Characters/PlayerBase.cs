@@ -281,6 +281,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         }
 
         // Debug.Log("Records from --> " + name);
+        // string bits = string.Empty;
         // foreach (var player in getNeuralNetRecords().getRecords().Keys)
         // {
         //     foreach (var input in getNeuralNetRecords().getRecords()[player].Keys)
@@ -290,8 +291,10 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         //         {
         //             Debug.Log(player + " > " + input + " == " + val);
         //         }
+        //         bits += val;
         //     }
         // }
+        // Debug.Log("---");
         // foreach (var certain in getNeuralNetRecords().getMyRecords().Keys)
         // {
         //     int val = (int)getNeuralNetRecords().getMyRecords()[certain];
@@ -299,7 +302,9 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         //     {
         //         Debug.Log(certain + " == " + val);
         //     }
+        //     bits += val;
         // }
+        // Debug.Log(bits);
         // Debug.Log("-----------------");
     }
 

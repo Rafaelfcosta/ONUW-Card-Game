@@ -40,6 +40,23 @@ public class NeuralNetworkRecords
         }
         return temp;
     }
+    public List<string> getAfirmationPhrasesFiltered(string firstPlayer, string secondPlayer)
+    {
+        // Debug.Log(playerToRemove);
+        // Debug.Log(PlayersAreasConstants.playersAreaDictionary[playerToRemove]);
+        List<string> temp = new List<string>();
+        foreach (var phrase in getAfirmationPhrases())
+        {
+            if (!phrase.Contains(PlayersAreasConstants.playersAreaDictionary[firstPlayer]))
+            {
+                if (!phrase.Contains(PlayersAreasConstants.playersAreaDictionary[secondPlayer] + DiscussionConstants.andItWas + CharactersNamesConstants.lobisomem))
+                {
+                    temp.Add(phrase);
+                }
+            }
+        }
+        return temp;
+    }
     public NeuralNetworkRecords()
     {
         afirmationPhrases.Add(DiscussionConstants.iStartedAs + CharactersNamesConstants.aldeao);
