@@ -304,7 +304,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         //     }
         //     bits += val;
         // }
-        // Debug.Log(bits);
+        // // Debug.Log(bits);
         // Debug.Log("-----------------");
     }
 

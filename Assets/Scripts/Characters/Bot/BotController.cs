@@ -94,7 +94,26 @@ public class BotController : PlayerBase
         }
         else
         {
-            list = getNeuralNetRecords().getAfirmationPhrasesFiltered(name);
+            string lookedChar = string.Empty;
+            if (startedAsWerewolf() && isWerewolf())
+            {
+                foreach (var card in getCardsAndPlace())
+                {
+                    if (card.Key.StartsWith(PlayersAreasConstants.middle))
+                    {
+                        lookedChar = CharactersNamesConstants.charsNameDictionary[getCardName(card.Value)];
+                        break;
+                    }
+                }
+            }
+            if (!lookedChar.Equals(string.Empty) && !lookedChar.Equals(CharactersNamesConstants.lobisomem))
+            {
+                list = getCharacterPhrases(getNeuralNetRecords().getAfirmationPhrasesFiltered(name), lookedChar);
+            }
+            else
+            {
+                list = getNeuralNetRecords().getAfirmationPhrasesFiltered(name);
+            }
         }
 
         // Debug.Log(name + "-------------");
@@ -131,10 +150,11 @@ public class BotController : PlayerBase
             {
                 int num = getPlayerNumFromText(afirmation);
                 string player = "Player" + num;
-                afirmationText.text = afirmation;
                 // Debug.Log(name + " -> " + player + " //" + afirmation);
                 addPlayerStatement(afirmation, player);
             }
+
+            afirmationText.text = afirmation;
         }
     }
 
@@ -153,6 +173,7 @@ public class BotController : PlayerBase
         if (index == -1)
         {
             index = Random.Range(0, players.Count + 1);
+            Debug.Log("Random Vote");
         }
 
         string option;
@@ -192,5 +213,18 @@ public class BotController : PlayerBase
             }
         }
         return -1;
+    }
+
+    private List<string> getCharacterPhrases(List<string> baseList, string character)
+    {
+        List<string> temp = new List<string>();
+        foreach (var phrase in baseList)
+        {
+            if (phrase.Contains(DiscussionConstants.iStartedAs + character))
+            {
+                temp.Add(phrase);
+            }
+        }
+        return temp;
     }
 }
