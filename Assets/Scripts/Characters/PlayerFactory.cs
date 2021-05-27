@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnitySharpNEAT;
 
 public class PlayerFactory : MonoBehaviour
 {
@@ -17,24 +18,34 @@ public class PlayerFactory : MonoBehaviour
     void Start()
     {
         Transform parent = GameObject.Find("MainBoard").transform;
+        NeatSupervisor neatSupervisor = GetComponent<NeatSupervisor>();
 
-        for (int i = 0; i < 4; i++)
+        if (neatSupervisor != null)
         {
-            if (i == 0)
+            createPlayer(playerPrefab, parent, PlayersAreasConstants.player1, positions[0], 0);
+
+            neatSupervisor.RunMyBests();
+        }
+        else
+        {
+            for (int i = 0; i < 4; i++)
             {
-                if (botsOnly)
+                if (i == 0)
                 {
-                    createPlayer(botPrefab, parent, PlayersAreasConstants.player1, positions[i], i);
+                    if (botsOnly)
+                    {
+                        createPlayer(botPrefab, parent, PlayersAreasConstants.player1, positions[i], i);
+                    }
+                    else
+                    {
+                        createPlayer(playerPrefab, parent, PlayersAreasConstants.player1, positions[i], i);
+                    }
                 }
                 else
                 {
-                    createPlayer(playerPrefab, parent, PlayersAreasConstants.player1, positions[i], i);
+                    string botname = "Player" + (i + 1);
+                    createPlayer(botPrefab, parent, botname, positions[i], i);
                 }
-            }
-            else
-            {
-                string botname = "Player" + (i + 1);
-                createPlayer(botPrefab, parent, botname, positions[i], i);
             }
         }
     }

@@ -31,15 +31,8 @@ namespace UnitySharpNEAT
             }
             if (GUI.Button(new Rect(10, 110, 110, 40), "Run best"))
             {
-                _neatSupervisor.RunBest();
-            }
-            if (GUI.Button(new Rect(10, 160, 110, 40), "Delete Saves"))
-            {
-                ExperimentIO.DeleteAllSaveFiles(_neatSupervisor.Experiment);
-            }
-            if (GUI.Button(new Rect(10, 210, 110, 40), "Pause/Continue"))
-            {
-                _neatSupervisor.ContinueEvolution();
+                // _neatSupervisor.RunBest();
+                _neatSupervisor.RunMyBests();
             }
 
             GUI.Button(new Rect(10, Screen.height - 70, 110, 60), string.Format("Generation: {0}\nFitness: {1:0.00}", _neatSupervisor.CurrentGeneration, _neatSupervisor.CurrentBestFitness));

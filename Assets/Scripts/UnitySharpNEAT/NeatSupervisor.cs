@@ -64,7 +64,7 @@ namespace UnitySharpNEAT
 
         [SerializeField]
         private bool _enableDebugLogging = false;
-
+        public bool vsPlayer = false;
 
         // Object pooling and Unit management
         private Dictionary<IBlackBox, UnitController> _blackBoxMap = new Dictionary<IBlackBox, UnitController>();
@@ -112,7 +112,10 @@ namespace UnitySharpNEAT
 
             ExperimentIO.DebugPrintSavePaths(Experiment);
 
-            StartEvolution();
+            if (!vsPlayer)
+            {
+                StartEvolution();
+            }
         }
         #endregion
 
@@ -178,6 +181,22 @@ namespace UnitySharpNEAT
             IBlackBox phenome = genomeDecoder.Decode(genome);
 
             ActivateUnit(phenome);
+        }
+        public void RunMyBests()
+        {
+            NeatGenome genome = Experiment.LoadChampion();
+            if (genome == null)
+                return;
+
+            for (int i = 0; i < 3; i++)
+            {
+                // Get a genome decoder that can convert genomes to phenomes.
+                IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = Experiment.CreateGenomeDecoder();
+                // Decode the genome into a phenome (neural network, i.e. IBlackBox).
+                IBlackBox phenome = genomeDecoder.Decode(genome);
+
+                ActivateUnit(phenome);
+            }
         }
         #endregion
 
@@ -322,7 +341,7 @@ namespace UnitySharpNEAT
 
             if (CurrentGeneration % 5 == 0)
             {
-                Utility.Log("Saving backup");    
+                Utility.Log("Saving backup");
                 Experiment.SavePopulation(EvolutionAlgorithm.GenomeList);
                 Experiment.SaveChampion(EvolutionAlgorithm.CurrentChampGenome);
             }

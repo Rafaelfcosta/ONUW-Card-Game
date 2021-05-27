@@ -6,12 +6,6 @@ using UnityEngine.UI;
 
 public class BotController : PlayerBase
 {
-    List<string> playersSequence = new List<string>
-    {
-        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player2],
-        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player3],
-        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player4]
-    };
     List<string> possibleCharacters = new List<string> {
         CharactersNamesConstants.aldeao,
         CharactersNamesConstants.ladrao,

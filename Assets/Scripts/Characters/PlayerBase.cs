@@ -21,6 +21,12 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     private bool voted = false;
     private int voteOption = -1;
     private List<string> phrases = new List<string>();
+    public List<string> playersSequence = new List<string>
+    {
+        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player2],
+        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player3],
+        PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player4]
+    };
 
     public virtual void Start()
     {
@@ -354,16 +360,18 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
 
             if (getVoteOption() < players.Count)
             {
+                PlayerBase votedPlayer = getPlayerByName(PlayersAreasConstants.playersPositionRelativesInverse[name][playersSequence[getVoteOption()]]);
+
                 if (isOnVillagerTeam())
                 {
-                    if (players[getVoteOption()].isWerewolf())
+                    if (votedPlayer.isWerewolf())
                     {
                         fitness += 2;
                     }
                 }
                 else
                 {
-                    if (players[getVoteOption()].isOnVillagerTeam())
+                    if (votedPlayer.isOnVillagerTeam())
                     {
                         fitness += 2;
                     }
@@ -371,29 +379,24 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
             }
             else
             {
-                bool flag = false;
-                foreach (var player in players)
+                if (isOnVillagerTeam())
                 {
-                    if (player.isWerewolf())
+                    GameController gameController = transform.parent.GetComponent<GameController>();
+                    if (gameController.isHasWerewolf())
                     {
-                        flag = true;
-                        break;
+                        if (fitness > 0)
+                            fitness -= 1;
                     }
                 }
-                if (flag)
-                {
-                    if (fitness > 0)
-                        fitness -= 1;
-                }
+
             }
+            return fitness;
         }
-        // return fitness * 0.2f;
         return fitness;
     }
 
     protected override void HandleIsActiveChanged(bool newIsActive)
     {
-        // Debug.Log(newIsActive);
         if (newIsActive)
         {
             FindSeatController findSeatController = GetComponent<FindSeatController>();
@@ -506,5 +509,17 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     {
         getNeuralNetRecords().getMyRecords()["Sou um " + CharactersNamesConstants.charsNameDictionary[getInitialCardName()]] = 0;
         getNeuralNetRecords().getMyRecords()["Sou um " + CharactersNamesConstants.charsNameDictionary[getCurrentCardName()]] = 1;
+    }
+    public PlayerBase getPlayerByName(string playerName)
+    {
+        foreach (var player in players)
+        {
+            if (player.name.Equals(playerName))
+            {
+                PlayerBase temp = player;
+                return temp;
+            }
+        }
+        return null;
     }
 }

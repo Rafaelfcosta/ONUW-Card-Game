@@ -294,6 +294,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
+      propertyPath: vsPlayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
+        type: 3}
       propertyPath: _spawnParent
       value: 
       objectReference: {fileID: 0}

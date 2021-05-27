@@ -696,8 +696,9 @@ public class GameController : MonoBehaviour
 
     public void matchEnded()
     {
-        // tableFillerController.realocatePlayers(players);
         ended = true;
+        if (isHasHumanPlayer())
+            toggleAllCardsVisible(true);
     }
 
     public void newMatch()
