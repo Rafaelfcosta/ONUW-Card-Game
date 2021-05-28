@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+  <ExperimentName>CardsExperiment</ExperimentName>
+  <PopulationSize>100</PopulationSize>
+  <SpecieCount>50</SpecieCount>
+  <Activation>
+    <Scheme>Acyclic</Scheme>
+    <!-- <Scheme>CyclicFixedIters</Scheme>
+    <Iters>2</Iters> -->
+  </Activation>
+  <ComplexityRegulationStrategy>Absolute</ComplexityRegulationStrategy>
+  <ComplexityThreshold>300</ComplexityThreshold>
+  <Description>Bots Learn to deal with bluff</Description>
+</Config>

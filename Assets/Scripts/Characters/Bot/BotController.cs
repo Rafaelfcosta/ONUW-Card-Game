@@ -136,18 +136,17 @@ public class BotController : PlayerBase
         }
         else
         {
-            if (getPlayerNumFromText(afirmation).Equals(-1))
+            int num = getPlayerNumFromText(afirmation);
+            if (num.Equals(-1))
             {
                 addPlayerStatement(afirmation);
             }
             else
             {
-                int num = getPlayerNumFromText(afirmation);
                 string player = "Player" + num;
                 // Debug.Log(name + " -> " + player + " //" + afirmation);
                 addPlayerStatement(afirmation, player);
             }
-
             afirmationText.text = afirmation;
         }
     }
@@ -163,6 +162,7 @@ public class BotController : PlayerBase
     {
         base.vote();
         int index = getVoteOption();
+        // int index = -1;
 
         if (index == -1)
         {
@@ -195,18 +195,6 @@ public class BotController : PlayerBase
     {
         return DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente + "\n" + DiscussionConstants.lookedAtMiddleAndSaw
         + DiscussionConstants.a + role1 + DiscussionConstants.andA + role2;
-    }
-
-    private int getPlayerNumFromText(string text)
-    {
-        for (int i = 0; i < text.Length; i++)
-        {
-            if (System.Char.IsDigit(text[i]))
-            {
-                return int.Parse(text[i].ToString());
-            }
-        }
-        return -1;
     }
 
     private List<string> getCharacterPhrases(List<string> baseList, string character)

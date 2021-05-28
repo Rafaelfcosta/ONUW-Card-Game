@@ -339,11 +339,25 @@ namespace UnitySharpNEAT
             CurrentBestFitness = EvolutionAlgorithm.Statistics._maxFitness;
             CurrentGeneration = EvolutionAlgorithm.CurrentGeneration;
 
-            if (CurrentGeneration % 5 == 0)
+            if (CurrentGeneration % 15 == 0)
             {
                 Utility.Log("Saving backup");
                 Experiment.SavePopulation(EvolutionAlgorithm.GenomeList);
                 Experiment.SaveChampion(EvolutionAlgorithm.CurrentChampGenome);
+            }
+
+
+            try
+            {
+                string filePath = Application.dataPath + "/test3.csv";
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath, true))
+                {
+                    file.WriteLine(CurrentGeneration + ";" + CurrentBestFitness);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex);
             }
         }
 

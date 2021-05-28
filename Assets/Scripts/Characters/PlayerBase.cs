@@ -350,11 +350,12 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
 
     public override float GetFitness()
     {
-        int fitness = 0;
+        int fitness = 10;
         if (isVoted())
         {
             if (isWinner())
             {
+                //bonificação por ter vencido
                 fitness += 10;
             }
 
@@ -366,16 +367,83 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
                 {
                     if (votedPlayer.isWerewolf())
                     {
+                        //bonificação por ter votado em um lobisomem
                         fitness += 2;
                     }
+                    else
+                    {
+                        //penalidade por votar em outro aldeão
+                        fitness -= 2;
+                    }
+
+                    List<string> playersWithDiscrepancy = getPlayersWithDiscrepancy();
+
+                    if (playersWithDiscrepancy.Count > 1)
+                    {
+                        bool didntDetect = true;
+                        foreach (var player in playersWithDiscrepancy)
+                        {
+                            if (votedPlayer.name.Equals(player))
+                            {
+                                didntDetect = false;
+                                // fitness += 4;
+                                // break;
+                            }
+                        }
+
+                        if (didntDetect)
+                        {
+                            fitness -= 4;
+                        }
+                    }
+
+
                 }
                 else
                 {
                     if (votedPlayer.isOnVillagerTeam())
                     {
+                        //bonificação por ter votado em um aldeão
                         fitness += 2;
                     }
+                    else
+                    {
+                        //penalidade por votar em outro lobisomem
+                        fitness -= 4;
+                    }
                 }
+
+                if (startedAsSeer())
+                {
+                    foreach (var certain in getNeuralNetRecords().getMyRecords().Keys)
+                    {
+                        int val = (int)getNeuralNetRecords().getMyRecords()[certain];
+                        if (val.Equals(1))
+                        {
+                            if (certain.ToString().Contains(CharactersNamesConstants.lobisomem))
+                            {
+                                int playerNum = getPlayerNumFromText(certain.ToString());
+                                if (!playerNum.Equals(-1))
+                                {
+                                    string player = "Jogador " + playerNum;
+                                    if (votedPlayer.name.Equals(PlayersAreasConstants.playersPositionRelativesInverse[name][player]))
+                                    {
+                                        //bonificação por ter votado em um lobisomem visto
+                                        fitness += 4;
+                                    }
+                                    else
+                                    {
+                                        //penalidade por não ter votado em um lobisomem visto
+                                        fitness -= 3;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
             }
             else
             {
@@ -384,15 +452,20 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
                     GameController gameController = transform.parent.GetComponent<GameController>();
                     if (gameController.isHasWerewolf())
                     {
-                        if (fitness > 0)
-                            fitness -= 1;
+                        // if (fitness > 0)
+                        //penalidade por tentar skippar quando tem lobisomem
+                        fitness -= 1;
                     }
                 }
-
+                else
+                {
+                    //bonificação por tentar skippar quando tem lobisomem
+                    fitness += 1;
+                }
             }
             return fitness;
         }
-        return fitness;
+        return 0;
     }
 
     protected override void HandleIsActiveChanged(bool newIsActive)
@@ -521,5 +594,41 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
             }
         }
         return null;
+    }
+    public int getPlayerNumFromText(string text)
+    {
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (System.Char.IsDigit(text[i]))
+            {
+                return int.Parse(text[i].ToString());
+            }
+        }
+        return -1;
+    }
+
+    public List<string> getPlayersWithDiscrepancy()
+    {
+        List<string> playersWithDiscrepancy = new List<string>();
+        foreach (var player in getNeuralNetRecords().getRecords().Keys)
+        {
+            foreach (var input in getNeuralNetRecords().getRecords()[player].Keys)
+            {
+                int val = (int)getNeuralNetRecords().getRecords()[player][input];
+                if (val.Equals(1))
+                {
+                    if (input.ToString().Contains(DiscussionConstants.iStartedAs + CharactersNamesConstants.vidente) || input.ToString().Contains(DiscussionConstants.iStartedAs + CharactersNamesConstants.ladrao))
+                    {
+                        if (!playersWithDiscrepancy.Contains(player))
+                        {
+                            playersWithDiscrepancy.Add(player);
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return playersWithDiscrepancy;
     }
 }
