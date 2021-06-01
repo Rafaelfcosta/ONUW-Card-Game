@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 303f614d816898740b754898f4bdba2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  botsOnly: 1
+  botsOnly: 0
   playerPrefab: {fileID: 2001814776835544875, guid: 29ac3956eafa67c4592ec2fd839df8a5,
     type: 3}
   botPrefab: {fileID: 2001814776835544875, guid: cbc1c9d50be9071429933fb4ea5a73bb,
@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34b24a5348a7fbc40951edfd1c5e796d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _experimentConfigFileName: experiment.config
+  _experimentConfigFileName: cards.config
   _networkInputCount: 94
   _networkOutputCount: 4
   Trials: 15

@@ -167,7 +167,8 @@ public class GameController : MonoBehaviour
 
                 if (!isHasHumanPlayer())
                 {
-                    Invoke("doNextStage", 0.1f);
+                    // Invoke("doNextStage", 0.1f);
+                    doNextStage();
                 }
             }
             else

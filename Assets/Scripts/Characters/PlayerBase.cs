@@ -344,129 +344,156 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         }
 
         double max = values.Max();
-        // Debug.Log("Vote = " + values.IndexOf(max));
+        Debug.Log("Vote = " + values.IndexOf(max));
         setVoteOption(values.IndexOf(max));
     }
 
+    // public override float GetFitness()
+    // {
+    //     int fitness = 10;
+    //     if (isVoted())
+    //     {
+    //         if (isWinner())
+    //         {
+    //             //bonificação por ter vencido
+    //             fitness += 10;
+    //         }
+
+    //         if (getVoteOption() < players.Count)
+    //         {
+    //             PlayerBase votedPlayer = getPlayerByName(PlayersAreasConstants.playersPositionRelativesInverse[name][playersSequence[getVoteOption()]]);
+
+    //             if (isOnVillagerTeam())
+    //             {
+    //                 if (votedPlayer.isWerewolf())
+    //                 {
+    //                     //bonificação por ter votado em um lobisomem
+    //                     fitness += 2;
+    //                 }
+    //                 else
+    //                 {
+    //                     //penalidade por votar em outro aldeão
+    //                     // fitness -= 2;
+    //                 }
+
+    //                 List<string> playersWithDiscrepancy = getPlayersWithDiscrepancy();
+
+    //                 if (playersWithDiscrepancy.Count > 1)
+    //                 {
+    //                     bool didntDetect = true;
+    //                     foreach (var player in playersWithDiscrepancy)
+    //                     {
+    //                         if (votedPlayer.name.Equals(player))
+    //                         {
+    //                             didntDetect = false;
+    //                             // fitness += 4;
+    //                             // break;
+    //                         }
+    //                     }
+
+    //                     if (didntDetect)
+    //                     {
+    //                         fitness -= 4;
+    //                     }
+    //                 }
+
+
+    //             }
+    //             else
+    //             {
+    //                 if (votedPlayer.isOnVillagerTeam())
+    //                 {
+    //                     //bonificação por ter votado em um aldeão
+    //                     fitness += 2;
+    //                 }
+    //                 else
+    //                 {
+    //                     //penalidade por votar em outro lobisomem
+    //                     // fitness -= 4;
+    //                 }
+    //             }
+
+    //             if (startedAsSeer())
+    //             {
+    //                 foreach (var certain in getNeuralNetRecords().getMyRecords().Keys)
+    //                 {
+    //                     int val = (int)getNeuralNetRecords().getMyRecords()[certain];
+    //                     if (val.Equals(1))
+    //                     {
+    //                         if (certain.ToString().Contains(CharactersNamesConstants.lobisomem))
+    //                         {
+    //                             int playerNum = getPlayerNumFromText(certain.ToString());
+    //                             if (!playerNum.Equals(-1))
+    //                             {
+    //                                 string player = "Jogador " + playerNum;
+    //                                 if (votedPlayer.name.Equals(PlayersAreasConstants.playersPositionRelativesInverse[name][player]))
+    //                                 {
+    //                                     //bonificação por ter votado em um lobisomem visto
+    //                                     fitness += 4;
+    //                                 }
+
+    //                                 // else
+    //                                 // {
+    //                                 //     //penalidade por não ter votado em um lobisomem visto
+    //                                 //     fitness -= 3;
+    //                                 // }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         else
+    //         {
+    //             if (isOnVillagerTeam())
+    //             {
+    //                 // GameController gameController = transform.parent.GetComponent<GameController>();
+    //                 // if (gameController.isHasWerewolf())
+    //                 // {
+    //                 //     // if (fitness > 0)
+    //                 //     //penalidade por tentar skippar quando tem lobisomem
+    //                 //     fitness -= 1;
+    //                 // }
+    //             }
+    //             else
+    //             {
+    //                 //bonificação por tentar skippar quando tem lobisomem
+    //                 fitness += 2;
+    //             }
+    //         }
+    //         return fitness == 10 ? 0 : fitness;
+    //     }
+    //     return 0;
+    // }
+
     public override float GetFitness()
     {
-        int fitness = 10;
-        if (isVoted())
+        int fitness = 0;
+        if (isWinner())
         {
-            if (isWinner())
-            {
-                //bonificação por ter vencido
-                fitness += 10;
-            }
-
-            if (getVoteOption() < players.Count)
-            {
-                PlayerBase votedPlayer = getPlayerByName(PlayersAreasConstants.playersPositionRelativesInverse[name][playersSequence[getVoteOption()]]);
-
-                if (isOnVillagerTeam())
-                {
-                    if (votedPlayer.isWerewolf())
-                    {
-                        //bonificação por ter votado em um lobisomem
-                        fitness += 2;
-                    }
-                    else
-                    {
-                        //penalidade por votar em outro aldeão
-                        fitness -= 2;
-                    }
-
-                    List<string> playersWithDiscrepancy = getPlayersWithDiscrepancy();
-
-                    if (playersWithDiscrepancy.Count > 1)
-                    {
-                        bool didntDetect = true;
-                        foreach (var player in playersWithDiscrepancy)
-                        {
-                            if (votedPlayer.name.Equals(player))
-                            {
-                                didntDetect = false;
-                                // fitness += 4;
-                                // break;
-                            }
-                        }
-
-                        if (didntDetect)
-                        {
-                            fitness -= 4;
-                        }
-                    }
-
-
-                }
-                else
-                {
-                    if (votedPlayer.isOnVillagerTeam())
-                    {
-                        //bonificação por ter votado em um aldeão
-                        fitness += 2;
-                    }
-                    else
-                    {
-                        //penalidade por votar em outro lobisomem
-                        fitness -= 4;
-                    }
-                }
-
-                if (startedAsSeer())
-                {
-                    foreach (var certain in getNeuralNetRecords().getMyRecords().Keys)
-                    {
-                        int val = (int)getNeuralNetRecords().getMyRecords()[certain];
-                        if (val.Equals(1))
-                        {
-                            if (certain.ToString().Contains(CharactersNamesConstants.lobisomem))
-                            {
-                                int playerNum = getPlayerNumFromText(certain.ToString());
-                                if (!playerNum.Equals(-1))
-                                {
-                                    string player = "Jogador " + playerNum;
-                                    if (votedPlayer.name.Equals(PlayersAreasConstants.playersPositionRelativesInverse[name][player]))
-                                    {
-                                        //bonificação por ter votado em um lobisomem visto
-                                        fitness += 4;
-                                    }
-                                    else
-                                    {
-                                        //penalidade por não ter votado em um lobisomem visto
-                                        fitness -= 3;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-
-            }
-            else
-            {
-                if (isOnVillagerTeam())
-                {
-                    GameController gameController = transform.parent.GetComponent<GameController>();
-                    if (gameController.isHasWerewolf())
-                    {
-                        // if (fitness > 0)
-                        //penalidade por tentar skippar quando tem lobisomem
-                        fitness -= 1;
-                    }
-                }
-                else
-                {
-                    //bonificação por tentar skippar quando tem lobisomem
-                    fitness += 1;
-                }
-            }
-            return fitness;
+            //bonificação por ter vencido
+            fitness += 3;
         }
-        return 0;
+        else
+        {
+            bool allLosers = true;
+            foreach (var player in players)
+            {
+                if (player.isWinner())
+                {
+                    allLosers = false;
+                    break;
+                }
+            }
+
+            
+            if(allLosers)
+                fitness += 1;
+        }
+
+        return fitness;
     }
+
 
     protected override void HandleIsActiveChanged(bool newIsActive)
     {

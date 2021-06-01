@@ -262,6 +262,11 @@ public class VotationController : MonoBehaviour
         transform.gameObject.SetActive(false);
         Results.SetActive(true);
         gameController.matchEnded();
+
+        // foreach (var player in players)
+        // {
+        //     Debug.Log(player.name + " = " +  player.GetFitness());
+        // }
     }
 
 

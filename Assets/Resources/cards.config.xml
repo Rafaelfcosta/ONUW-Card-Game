@@ -2,11 +2,11 @@
 <Config>
   <ExperimentName>CardsExperiment</ExperimentName>
   <PopulationSize>100</PopulationSize>
-  <SpecieCount>50</SpecieCount>
+  <SpecieCount>30</SpecieCount>
   <Activation>
-    <Scheme>Acyclic</Scheme>
-    <!-- <Scheme>CyclicFixedIters</Scheme>
-    <Iters>2</Iters> -->
+    <!-- <Scheme>Acyclic</Scheme> -->
+    <Scheme>CyclicFixedIters</Scheme>
+    <Iters>2</Iters>
   </Activation>
   <ComplexityRegulationStrategy>Absolute</ComplexityRegulationStrategy>
   <ComplexityThreshold>300</ComplexityThreshold>

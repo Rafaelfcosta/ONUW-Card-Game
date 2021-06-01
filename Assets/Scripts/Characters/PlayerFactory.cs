@@ -22,9 +22,13 @@ public class PlayerFactory : MonoBehaviour
 
         if (neatSupervisor != null)
         {
-            createPlayer(playerPrefab, parent, PlayersAreasConstants.player1, positions[0], 0);
-
-            neatSupervisor.RunMyBests();
+            if(botsOnly){
+                neatSupervisor.RunMyBests(4);
+            }else{
+                createPlayer(playerPrefab, parent, PlayersAreasConstants.player1, positions[0], 0);
+                neatSupervisor.RunMyBests(3);
+            }
+            
         }
         else
         {

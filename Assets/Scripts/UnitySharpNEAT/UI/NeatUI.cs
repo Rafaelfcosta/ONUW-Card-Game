@@ -32,7 +32,7 @@ namespace UnitySharpNEAT
             if (GUI.Button(new Rect(10, 110, 110, 40), "Run best"))
             {
                 // _neatSupervisor.RunBest();
-                _neatSupervisor.RunMyBests();
+                _neatSupervisor.RunMyBests(4);
             }
 
             GUI.Button(new Rect(10, Screen.height - 70, 110, 60), string.Format("Generation: {0}\nFitness: {1:0.00}", _neatSupervisor.CurrentGeneration, _neatSupervisor.CurrentBestFitness));

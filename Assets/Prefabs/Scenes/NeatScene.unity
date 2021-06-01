@@ -290,7 +290,7 @@ PrefabInstance:
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
       propertyPath: Trials
-      value: 15
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
@@ -310,7 +310,7 @@ PrefabInstance:
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}
       propertyPath: StoppingFitness
-      value: 1000
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 7960091787313936975, guid: 4b78c34c1884fa34da0b6e8bea3a9797,
         type: 3}

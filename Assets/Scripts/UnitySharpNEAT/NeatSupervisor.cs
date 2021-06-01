@@ -182,13 +182,13 @@ namespace UnitySharpNEAT
 
             ActivateUnit(phenome);
         }
-        public void RunMyBests()
+        public void RunMyBests(int playersQtd)
         {
             NeatGenome genome = Experiment.LoadChampion();
             if (genome == null)
                 return;
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < playersQtd; i++)
             {
                 // Get a genome decoder that can convert genomes to phenomes.
                 IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = Experiment.CreateGenomeDecoder();
@@ -345,7 +345,6 @@ namespace UnitySharpNEAT
                 Experiment.SavePopulation(EvolutionAlgorithm.GenomeList);
                 Experiment.SaveChampion(EvolutionAlgorithm.CurrentChampGenome);
             }
-
 
             try
             {
