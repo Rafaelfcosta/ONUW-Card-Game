@@ -33,10 +33,10 @@ namespace UnitySharpNEAT
         private string _experimentConfigFileName = "experiment.config";
 
         [SerializeField]
-        private int _networkInputCount = 5;
+        private int _networkInputCount = 94;
 
         [SerializeField]
-        private int _networkOutputCount = 2;
+        private int _networkOutputCount = 4;
 
 
         [Header("Evaluation Settings")]
@@ -75,6 +75,14 @@ namespace UnitySharpNEAT
 
         private DateTime _startTime;
         #endregion
+
+
+        #region CUSTOM VARIABLES
+        private IList<NeatGenome> champions = new List<NeatGenome>();
+        private NeatGenome bestChamp;
+        #endregion
+
+
 
         #region PROPERTIES
         public int NetworkInputCount { get => _networkInputCount; }
@@ -184,19 +192,41 @@ namespace UnitySharpNEAT
         }
         public void RunMyBests(int playersQtd)
         {
+            // NeatGenome genome = Experiment.LoadChampion();
             NeatGenome genome = Experiment.LoadChampion();
-            if (genome == null)
-                return;
+            List<NeatGenome> champs = Experiment.LoadChampions();
+
+            System.Random rng = new System.Random();
+            champs = champs.OrderBy(a => rng.Next()).ToList();
 
             for (int i = 0; i < playersQtd; i++)
             {
                 // Get a genome decoder that can convert genomes to phenomes.
                 IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = Experiment.CreateGenomeDecoder();
                 // Decode the genome into a phenome (neural network, i.e. IBlackBox).
-                IBlackBox phenome = genomeDecoder.Decode(genome);
+                IBlackBox phenome = genomeDecoder.Decode(champs[i]);
 
                 ActivateUnit(phenome);
+
+                Debug.Log("Champion Birth = " + champs[i].BirthGeneration);
             }
+
+            // return;
+
+            // if (genome == null)
+            //     return;
+
+            // for (int i = 0; i < playersQtd; i++)
+            // {
+            //     // Get a genome decoder that can convert genomes to phenomes.
+            //     IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = Experiment.CreateGenomeDecoder();
+            //     // Decode the genome into a phenome (neural network, i.e. IBlackBox).
+            //     IBlackBox phenome = genomeDecoder.Decode(genome);
+
+            //     ActivateUnit(phenome);
+
+            //     Debug.Log("Champion Birth = " + genome.BirthGeneration);
+            // }
         }
         #endregion
 
@@ -339,19 +369,40 @@ namespace UnitySharpNEAT
             CurrentBestFitness = EvolutionAlgorithm.Statistics._maxFitness;
             CurrentGeneration = EvolutionAlgorithm.CurrentGeneration;
 
-            if (CurrentGeneration % 15 == 0)
+            champions.Add(EvolutionAlgorithm.CurrentChampGenome);
+
+
+            if (bestChamp == null)
             {
-                Utility.Log("Saving backup");
+                // Debug.Log(EvolutionAlgorithm.CurrentChampGenome.EvaluationInfo.Fitness + " <-> " +  bestChamp.EvaluationInfo.Fitness);
+                bestChamp = EvolutionAlgorithm.CurrentChampGenome;
+            }
+            else
+            {
+                if (EvolutionAlgorithm.CurrentChampGenome.EvaluationInfo.Fitness > bestChamp.EvaluationInfo.Fitness)
+                {
+                    // Debug.Log("updating best from " + bestChamp.EvaluationInfo.Fitness + " to " + EvolutionAlgorithm.CurrentChampGenome.EvaluationInfo.Fitness);
+                    // Debug.Log(EvolutionAlgorithm.CurrentChampGenome.EvaluationInfo.Fitness + " <-> " +  bestChamp.EvaluationInfo.Fitness);
+                    bestChamp = EvolutionAlgorithm.CurrentChampGenome;
+                }
+            }
+
+            if (CurrentGeneration % 5 == 0)
+            {
+                // Debug.Log("saving");
                 Experiment.SavePopulation(EvolutionAlgorithm.GenomeList);
-                Experiment.SaveChampion(EvolutionAlgorithm.CurrentChampGenome);
+                // Experiment.SaveChampion(EvolutionAlgorithm.CurrentChampGenome);
+                Experiment.SaveChampion(bestChamp);
+                Experiment.SaveChampions(champions);
             }
 
             try
             {
-                string filePath = Application.dataPath + "/test3.csv";
+                string filePath = Application.dataPath + "/results.csv";
+                // string filePath = Application.dataPath + "/aleatorios.csv";
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath, true))
                 {
-                    file.WriteLine(CurrentGeneration + ";" + CurrentBestFitness);
+                    file.WriteLine(CurrentGeneration + "," + CurrentBestFitness);
                 }
             }
             catch (Exception ex)
@@ -368,8 +419,13 @@ namespace UnitySharpNEAT
             Utility.Log("STOP - Save the Population and the current Champion");
 
             // Save genomes to xml file.    
+            // Experiment.SaveChampion(EvolutionAlgorithm.CurrentChampGenome);
+            // Experiment.SaveChampion(bestChamp);
+
+
             Experiment.SavePopulation(EvolutionAlgorithm.GenomeList);
-            Experiment.SaveChampion(EvolutionAlgorithm.CurrentChampGenome);
+            Experiment.SaveChampions(champions);
+
 
             DateTime endTime = DateTime.Now;
             Utility.Log("Total time elapsed: " + (endTime - _startTime));

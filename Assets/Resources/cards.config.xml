@@ -2,13 +2,11 @@
 <Config>
   <ExperimentName>CardsExperiment</ExperimentName>
   <PopulationSize>100</PopulationSize>
-  <SpecieCount>30</SpecieCount>
+  <SpecieCount>5</SpecieCount>
   <Activation>
-    <!-- <Scheme>Acyclic</Scheme> -->
-    <Scheme>CyclicFixedIters</Scheme>
-    <Iters>2</Iters>
+    <Scheme>Acyclic</Scheme>
   </Activation>
   <ComplexityRegulationStrategy>Absolute</ComplexityRegulationStrategy>
-  <ComplexityThreshold>300</ComplexityThreshold>
-  <Description>Bots Learn to deal with bluff</Description>
+  <ComplexityThreshold>294</ComplexityThreshold>
+  <Description>Bots Learn to deal with incomplete information</Description>
 </Config>

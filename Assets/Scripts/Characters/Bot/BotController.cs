@@ -167,7 +167,8 @@ public class BotController : PlayerBase
         if (index == -1)
         {
             index = Random.Range(0, players.Count + 1);
-            Debug.Log("Random Vote");
+            setVoteOption(index);
+            // Debug.Log("Random Vote = " + index);
         }
 
         string option;
@@ -183,6 +184,14 @@ public class BotController : PlayerBase
         }
         VotationController votationController = transform.parent.Find("UI").gameObject.FindComponentInChildWithTag<VotationController>("votation");
         votationController.addVoteToPlayer(option);
+        if (!option.Equals("none"))
+        {
+            setVotedPlayerName(PlayersAreasConstants.playersAreaDictionary[name] + " votou no " +  PlayersAreasConstants.playersAreaDictionary[option]);
+        }
+        else
+        {
+            setVotedPlayerName(PlayersAreasConstants.playersAreaDictionary[name] + " pulou o voto");
+        }
         // Debug.Log(PlayersAreasConstants.playersAreaDictionary[name] + " voted for -> " + PlayersAreasConstants.playersAreaDictionary[option]);
         setVoted(true);
     }

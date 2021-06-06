@@ -193,6 +193,11 @@ namespace UnitySharpNEAT
             return ExperimentIO.WritePopulation(this, genomeList);
         }
 
+        public bool SaveChampions(IList<NeatGenome> genomeList)
+        {
+            return ExperimentIO.WriteChampions(this, genomeList);
+        }
+
         /// <summary>
         /// Loads the saved population from the population safe file of this experiment (by default: myexperimentname.pop.xml).
         /// If the file does not exist, then a new population is created and returned.
@@ -217,6 +222,11 @@ namespace UnitySharpNEAT
         public NeatGenome LoadChampion()
         {
             return ExperimentIO.ReadChampion(this);
+        }
+
+        public List<NeatGenome> LoadChampions()
+        {
+            return ExperimentIO.ReadChampions(this);
         }
         #endregion
     }

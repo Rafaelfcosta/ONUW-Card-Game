@@ -52,12 +52,35 @@ namespace UnitySharpNEAT
             return Application.persistentDataPath + "/" + experimentName + extention;
         }
 
+        public static string GetSaveFileDataPath(string experimentName, ExperimentFileType fileType)
+        {
+            string extention;
+            switch (fileType)
+            {
+                case ExperimentFileType.Champion:
+                    extention = FILE_EXTENTION_CHAMPION;
+                    break;
+                case ExperimentFileType.Population:
+                    extention = FILE_EXTENTION_POPULATION;
+                    break;
+                default:
+                    extention = ".UnknownNeatFileType";
+                    break;
+            }
+            return Application.dataPath + "/Resources/" + experimentName + extention;
+        }
+
         /// <summary>
         /// Writes the specified genomes to the population safe file of the specified experiment (by default: myexperimentname.pop.xml)
         /// </summary>
         public static bool WritePopulation(INeatExperiment experiment, IList<NeatGenome> genomeList)
         {
             return WriteGenomes(experiment, genomeList, ExperimentFileType.Population);
+        }
+
+        public static bool WriteChampions(INeatExperiment experiment, IList<NeatGenome> genomeList)
+        {
+            return WriteGenomesModified(experiment, genomeList, ExperimentFileType.Population);
         }
 
         /// <summary>
@@ -76,8 +99,49 @@ namespace UnitySharpNEAT
             XmlWriterSettings _xwSettings = new XmlWriterSettings();
             _xwSettings.Indent = true;
 
-            string filePath = GetSaveFilePath(experiment.Name, fileType);
-            
+            string filePath;
+
+            // if (fileType.Equals(ExperimentFileType.Champion))
+            // {
+            //     filePath = GetSaveFilePath(experiment.Name + "-" + genomeList[0].BirthGeneration, fileType);
+            // }
+            // else
+            // {
+            //     filePath = GetSaveFilePath(experiment.Name, fileType);
+            // }
+
+            filePath = GetSaveFilePath(experiment.Name, fileType);
+
+            DirectoryInfo dirInf = new DirectoryInfo(Application.persistentDataPath);
+            if (!dirInf.Exists)
+            {
+                Debug.Log("ExperimentIO - Creating subdirectory");
+                dirInf.Create();
+            }
+            try
+            {
+                using (XmlWriter xw = XmlWriter.Create(filePath, _xwSettings))
+                {
+                    NeatGenomeXmlIO.WriteComplete(xw, genomeList, false);
+                    Debug.Log("Successfully saved the genomes of the '" + fileType.ToString() + "' for the experiment '" + experiment.Name + "' to the location:\n" + filePath);
+                }
+            }
+            catch (Exception)
+            {
+                Debug.Log("Error saving the genomes of the '" + fileType.ToString() + "' for the experiment '" + experiment.Name + "' to the location:\n" + filePath);
+                return false;
+            }
+            return true;
+        }
+        private static bool WriteGenomesModified(INeatExperiment experiment, IList<NeatGenome> genomeList, ExperimentFileType fileType)
+        {
+            XmlWriterSettings _xwSettings = new XmlWriterSettings();
+            _xwSettings.Indent = true;
+
+            string filePath;
+
+            filePath = GetSaveFilePath(experiment.Name + "Champions", fileType);
+
             DirectoryInfo dirInf = new DirectoryInfo(Application.persistentDataPath);
             if (!dirInf.Exists)
             {
@@ -122,6 +186,15 @@ namespace UnitySharpNEAT
             return championPop[0];
         }
 
+        public static List<NeatGenome> ReadChampions(INeatExperiment experiment)
+        {
+            return ReadChampionGenomes(experiment, ExperimentFileType.Population, false);
+            // if (championPop == null || championPop.Count == 0)
+            //     return null;
+
+            // return championPop[0];
+        }
+
         /// <summary>
         /// Loads a list of genomes from the save file fitting the experiment name and the ExperimentFileType.
         /// </summary>
@@ -138,7 +211,7 @@ namespace UnitySharpNEAT
                 {
                     genomeList = NeatGenomeXmlIO.ReadCompleteGenomeList(xr, false, genomeFactory);
 
-                    if(genomeList != null && genomeList.Count > 0)
+                    if (genomeList != null && genomeList.Count > 0)
                         Utility.Log("Successfully loaded the genomes of the '" + fileType.ToString() + "' for the experiment '" + experiment.Name + "' from the location:\n" + filePath);
                 }
             }
@@ -146,7 +219,33 @@ namespace UnitySharpNEAT
             {
                 Utility.Log("Error loading genome from file, could not find the file at: " + filePath + "\n" + e1.Message);
 
-                if(createNewGenesIfNotLoadable)
+                if (createNewGenesIfNotLoadable)
+                    genomeList = genomeFactory.CreateGenomeList(experiment.DefaultPopulationSize, 0);
+            }
+            return genomeList;
+        }
+        private static List<NeatGenome> ReadChampionGenomes(INeatExperiment experiment, ExperimentFileType fileType, bool createNewGenesIfNotLoadable = false)
+        {
+            List<NeatGenome> genomeList = null;
+            NeatGenomeFactory genomeFactory = (NeatGenomeFactory)experiment.CreateGenomeFactory();
+
+            string filePath = GetSaveFileDataPath(experiment.Name + "Champions", fileType);
+
+            try
+            {
+                using (XmlReader xr = XmlReader.Create(filePath))
+                {
+                    genomeList = NeatGenomeXmlIO.ReadCompleteGenomeList(xr, false, genomeFactory);
+
+                    if (genomeList != null && genomeList.Count > 0)
+                        Utility.Log("Successfully loaded the genomes of the '" + fileType.ToString() + "' for the experiment '" + experiment.Name + "' from the location:\n" + filePath);
+                }
+            }
+            catch (Exception e1)
+            {
+                Utility.Log("Error loading genome from file, could not find the file at: " + filePath + "\n" + e1.Message);
+
+                if (createNewGenesIfNotLoadable)
                     genomeList = genomeFactory.CreateGenomeList(experiment.DefaultPopulationSize, 0);
             }
             return genomeList;

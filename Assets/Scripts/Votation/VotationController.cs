@@ -10,6 +10,7 @@ public class VotationController : MonoBehaviour
     public GameObject Results;
     private Text mathDetailsText;
     private Text mathResultText;
+    private Text votedInText;
     private GameController gameController;
     private List<PlayerBase> players;
     public Dictionary<string, int> votes = new Dictionary<string, int>
@@ -37,8 +38,10 @@ public class VotationController : MonoBehaviour
         gameController = gameObject.transform.parent.parent.GetComponent<GameController>();
         players = gameController.getPlayers();
 
-        mathDetailsText = Results.transform.GetChild(Results.transform.childCount - 2).GetComponent<Text>();
-        mathResultText = Results.transform.GetChild(Results.transform.childCount - 1).GetComponent<Text>();
+
+        mathDetailsText = Results.transform.GetChild(Results.transform.childCount - 3).GetComponent<Text>();
+        mathResultText = Results.transform.GetChild(Results.transform.childCount - 2).GetComponent<Text>();
+        votedInText = Results.transform.GetChild(Results.transform.childCount - 1).GetComponent<Text>();
     }
 
     Toggle GetSelectedToggle()
@@ -71,6 +74,14 @@ public class VotationController : MonoBehaviour
         int vote = GetSelectedToggle().transform.GetSiblingIndex() - 1;
         addVoteToPlayer(vote);
 
+        if (!vote.Equals(players.Count))
+        {
+            gameController.getPlayerController().setVotedPlayerName(PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player1] + " votou no " + PlayersAreasConstants.playersAreaDictionary[votes.ElementAt(vote).Key]);
+        }
+        else
+        {
+            gameController.getPlayerController().setVotedPlayerName(PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player1] + " pulou o voto");
+        }
     }
 
     public Dictionary<string, int> getVotes()
@@ -259,6 +270,12 @@ public class VotationController : MonoBehaviour
 
     private void endVotation()
     {
+        votedInText.text = string.Empty;
+        foreach (var player in players)
+        {
+            votedInText.text += player.getVotedPlayerName() + "\n";
+        }
+
         transform.gameObject.SetActive(false);
         Results.SetActive(true);
         gameController.matchEnded();

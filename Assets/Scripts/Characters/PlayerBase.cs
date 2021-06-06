@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using SharpNeat.Phenomes;
 using UnityEngine;
-using UnityEngine.UI;
 using UnitySharpNEAT;
+using UnityEngine.UI;
 
 public class PlayerBase : UnitController, IPlayer, IDiscussion
 {
@@ -27,6 +27,10 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player3],
         PlayersAreasConstants.playersAreaDictionary[PlayersAreasConstants.player4]
     };
+    private string votedPlayerName = string.Empty;
+
+
+
 
     public virtual void Start()
     {
@@ -73,6 +77,7 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         getNeuralNetRecords().getMyRecords().Clear();
         players.Clear();
         setVoteOption(-1);
+        setVotedPlayerName(string.Empty);
 
         if (transform.childCount > 0)
         {
@@ -344,8 +349,11 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         }
 
         double max = values.Max();
-        Debug.Log("Vote = " + values.IndexOf(max));
-        setVoteOption(values.IndexOf(max));
+
+        // Debug.Log("Vote = " + values.IndexOf(max));
+        int op = values.LastIndexOf(max);
+        Debug.Log("Vote = " + op);
+        setVoteOption(op);
     }
 
     // public override float GetFitness()
@@ -466,31 +474,73 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
     //     return 0;
     // }
 
+    // public override float GetFitness()
+    // {
+    //     int fitness = 0;
+    //     if (isWinner())
+    //     {
+    //         //bonificação por ter vencido
+    //         fitness += 3;
+    //     }
+    //     else
+    //     {
+    //         bool allLosers = true;
+    //         foreach (var player in players)
+    //         {
+    //             if (player.isWinner())
+    //             {
+    //                 allLosers = false;
+    //                 break;
+    //             }
+    //         }
+
+
+    //         if(allLosers)
+    //             fitness += 1;
+    //     }
+
+    //     return fitness;
+    // }
+
     public override float GetFitness()
     {
         int fitness = 0;
-        if (isWinner())
+        if (isVoted())
         {
-            //bonificação por ter vencido
-            fitness += 3;
-        }
-        else
-        {
-            bool allLosers = true;
-            foreach (var player in players)
+            if (getVoteOption() < players.Count)
             {
-                if (player.isWinner())
+                PlayerBase votedPlayer = getPlayerByName(PlayersAreasConstants.playersPositionRelativesInverse[name][playersSequence[getVoteOption()]]);
+
+                if (isOnVillagerTeam())
                 {
-                    allLosers = false;
-                    break;
+                    if (votedPlayer.isWerewolf())
+                    {
+                        //bonificação por ter votado em um lobisomem
+                        fitness += 100;
+                    }
+                }
+                else
+                {
+                    if (votedPlayer.isOnVillagerTeam())
+                    {
+                        //bonificação por ter votado em um aldeão
+                        fitness += 100;
+                    }
                 }
             }
-
-            
-            if(allLosers)
-                fitness += 1;
+            else
+            {
+                if (isOnVillagerTeam())
+                {
+                    GameController gameController = transform.parent.GetComponent<GameController>();
+                    if (!gameController.isHasWerewolf())
+                    {
+                        //bonificação por tentar skippar quando não tem lobisomem
+                        fitness += 100;
+                    }
+                }
+            }
         }
-
         return fitness;
     }
 
@@ -657,5 +707,14 @@ public class PlayerBase : UnitController, IPlayer, IDiscussion
         }
 
         return playersWithDiscrepancy;
+    }
+    public string getVotedPlayerName()
+    {
+        return this.votedPlayerName;
+    }
+
+    public void setVotedPlayerName(string votedPlayerName)
+    {
+        this.votedPlayerName = votedPlayerName;
     }
 }
